@@ -1,0 +1,2773 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <!-- Strict Viewport Guard to prevent any page jumps, zooming, or scaling on touch devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>NEVROOM | منصة التواصل الاجتماعي العصريّة والتحكم الشامل</title>
+
+    <!-- Google Fonts for Arabic Legibility -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Readex+Pro:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                        readex: ['Readex Pro', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Anti-Zoom & Interface CSS -->
+    <style>
+        :root {
+            --app-font: 'Cairo', sans-serif;
+            --app-font-size: 15px;
+            --app-line-height: 1.6;
+        }
+
+        /* Strict Anti-Zoom & Touch Rules */
+        html, body { overflow-x: hidden; max-width: 100%; }
+        html, body, input, textarea, select, button, a, div {
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Enforce minimum 16px font size on inputs to prevent mobile browser auto-zoom */
+        input[type="text"], 
+        input[type="email"], 
+        input[type="password"], 
+        input[type="url"], 
+        input[type="search"],
+        input[type="number"],
+        textarea, 
+        select {
+            font-size: max(16px, 1rem) !important;
+        }
+
+        body {
+            font-family: var(--app-font);
+            font-size: var(--app-font-size);
+            line-height: var(--app-line-height);
+            user-select: none;
+            -webkit-user-select: none;
+            overscroll-behavior-y: contain;
+        }
+
+        .selectable-text {
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.7); }
+
+        .like-animated {
+            animation: heartPulse 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.25s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-full flex flex-col transition-colors duration-200">
+
+    <!-- General Maintenance Banner (Shown only if Admin Maintenance Mode is Enabled) -->
+    <div id="maintenanceBanner" class="hidden bg-amber-500 text-slate-950 text-xs font-black py-2 px-4 text-center border-b border-amber-600 flex justify-between items-center z-50">
+        <span class="flex items-center gap-2 mx-auto">
+            <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+            <span>تنبيه: المنصة حالياً في وضع الصيانة العام (المشاركات والتفاعلات معطلة للمستخدمين العاديين). يمكنك الإدارة من لوحة الأدمن.</span>
+        </span>
+    </div>
+
+    <div id="announceBar" class="hidden bg-indigo-600 text-white text-xs font-bold py-2 px-4 text-center"></div>
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
+            
+            <!-- NEVROOM Logo & Brand -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="#" onclick="switchTab('all')" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-200">
+                        <i class="fa-solid fa-n text-xl font-black"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xl font-black bg-gradient-to-l from-indigo-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent leading-none tracking-wide">NEVROOM</span>
+                        <span class="text-[10px] text-slate-400 font-semibold tracking-wider">PLATFORM v3.5</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Global Search Bar -->
+            <div class="flex-1 max-w-md relative hidden sm:block">
+                <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="globalSearchInput" oninput="debouncedSearch(this.value)" placeholder="ابحث في NEVROOM عن أفكار، منشورات أو حسابات..." class="w-full pl-8 pr-10 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-100/80 focus:bg-white dark:focus:bg-slate-900 text-sm rounded-full border border-transparent focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Header Action Buttons -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                
+                <!-- System Open Indicator -->
+                <div class="px-2.5 py-1 rounded-full text-xs font-bold hidden sm:flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 border border-emerald-200 dark:border-emerald-800">
+                    <i class="fa-solid fa-circle text-[8px] animate-pulse"></i>
+                    <span class="hidden md:inline">المنصة:</span>
+                    <span>مفتوحة ⚡</span>
+                </div>
+
+                <!-- Growth Bot Button -->
+                <button onclick="openBotModal()" title="بوت زيادة المتابعين واللايكات والتعليقات" class="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-md text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all">
+                    <i class="fa-solid fa-robot text-amber-300"></i>
+                    <span class="hidden sm:inline">بوت النمو</span>
+                </button>
+
+                <!-- Admin Control Center Button -->
+                <button data-admin-only onclick="handleAdminControlClick()" class="relative px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl shadow-md flex items-center gap-1.5 text-xs font-bold active:scale-95 transition-all">
+                    <i class="fa-solid fa-crown text-amber-300"></i>
+                    <span class="hidden md:inline">لوحة التحكم (108+)</span>
+                    <span id="adminLockBadge" class="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded-full font-mono">🔒</span>
+                </button>
+
+                <button onclick="openMsgModal()" title="الرسائل" class="p-2 text-slate-500 hover:text-indigo-600 dark:text-slate-400 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fa-solid fa-envelope text-base"></i></button>
+
+                <!-- Profile Avatar Button -->
+                <button onclick="openFullProfileView()" class="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800">
+                    <img id="navAvatar" src="" class="w-8 h-8 rounded-full object-cover ring-2 ring-indigo-500/30">
+                </button>
+
+                <!-- Auth Modal Launcher -->
+                <button onclick="logoutUser()" title="تسجيل الخروج" class="p-2 text-slate-500 hover:text-indigo-600 dark:text-slate-400 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i class="fa-solid fa-right-from-bracket text-base"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main 3-Column Layout -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-6 grid grid-cols-1 md:grid-cols-12 gap-6">
+        
+        <!-- Right Sidebar (Profile Card & Main Navigation) -->
+        <aside id="mainSidebarRight" class="md:col-span-3 hidden md:block">
+            <div class="sticky top-20 flex flex-col gap-4">
+                
+                <!-- Side Profile Mini-Card -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm text-center relative">
+                    <div class="h-16 bg-gradient-to-r from-indigo-600 to-purple-600 relative overflow-hidden">
+                        <img id="sideCoverImg" src="" class="w-full h-full object-cover opacity-80">
+                    </div>
+
+                    <div class="px-4 pb-4 -mt-8 relative z-10">
+                        <div class="relative inline-block mb-2">
+                            <img id="sideAvatar" src="" class="w-16 h-16 rounded-full object-cover border-4 border-white dark:border-slate-900 shadow-md mx-auto">
+                            <span id="onlineIndicator" class="absolute bottom-0 left-0 bg-emerald-500 border-2 border-white dark:border-slate-900 w-3.5 h-3.5 rounded-full"></span>
+                        </div>
+                        
+                        <h3 id="sideName" class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center justify-center gap-1">
+                            <span>...</span>
+                            <span id="sideBadgeContainer"></span>
+                        </h3>
+                        <p id="sideHandle" class="text-[11px] text-slate-400 mb-2" dir="ltr">@...</p>
+                        
+                        <!-- Side Live Stats -->
+                        <div id="sideStatsRow" class="grid grid-cols-4 gap-1 border-t border-slate-100 dark:border-slate-800 pt-2 text-center my-2">
+                            <div>
+                                <span id="sidePostsCount" class="block font-bold text-slate-800 dark:text-slate-200 text-xs">0</span>
+                                <span class="text-[9px] text-slate-400">منشور</span>
+                            </div>
+                            <div>
+                                <span id="sideFollowersCount" class="block font-bold text-slate-800 dark:text-slate-200 text-xs">0</span>
+                                <span class="text-[9px] text-slate-400">متابع</span>
+                            </div>
+                            <div>
+                                <span id="sideFollowingCount" class="block font-bold text-slate-800 dark:text-slate-200 text-xs">0</span>
+                                <span class="text-[9px] text-slate-400">يتابع</span>
+                            </div>
+                            <div>
+                                <span id="sideLikesCount" class="block font-bold text-slate-800 dark:text-slate-200 text-xs">0</span>
+                                <span class="text-[9px] text-slate-400">لايكات</span>
+                            </div>
+                        </div>
+
+                        <button onclick="openFullProfileView()" class="w-full py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all">
+                            عرض البروفيل الكامل
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Navigation List -->
+                <nav class="bg-white dark:bg-slate-900 rounded-3xl p-2 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col gap-1">
+                    <button onclick="switchTab('all')" id="nav-all" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10">
+                        <i class="fa-solid fa-house text-lg w-5"></i>
+                        <span>الرئيسية</span>
+                    </button>
+                    <button onclick="switchTab('popular')" id="nav-popular" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <i class="fa-solid fa-fire text-lg w-5"></i>
+                        <span>الأكثر تفاعلاً</span>
+                    </button>
+                    <button onclick="switchTab('saved')" id="nav-saved" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <i class="fa-solid fa-bookmark text-lg w-5"></i>
+                        <span>المحفوظات</span>
+                        <span id="savedBadge" class="mr-auto bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs px-2 py-0.5 rounded-full font-mono">0</span>
+                    </button>
+                    <button onclick="openFullProfileView()" id="nav-profile" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <i class="fa-solid fa-user text-lg w-5"></i>
+                        <span>الملف الشخصي المتكامل</span>
+                    </button>
+                    <button onclick="openBotModal()" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/30">
+                        <i class="fa-solid fa-robot text-lg w-5"></i>
+                        <span>بوت النمو والتفاعل</span>
+                        <span class="mr-auto text-[10px] bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full font-bold">⚡ نمو</span>
+                    </button>
+                    <button onclick="openVerifRequestModal()" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30">
+                        <i class="fa-solid fa-certificate text-lg w-5"></i>
+                        <span>طلب توثيق الحساب</span>
+                    </button>
+                    <button onclick="openMsgModal()" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"><i class="fa-solid fa-envelope text-lg w-5"></i><span>الرسائل الخاصة</span></button>
+                    <button data-admin-only onclick="handleAdminControlClick()" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30">
+                        <i class="fa-solid fa-crown text-lg w-5 text-amber-500"></i>
+                        <span>لوحة التحكم (108+ إعداد)</span>
+                    </button>
+                </nav>
+
+                <button onclick="focusComposer()" class="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-indigo-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pen-nib text-base"></i>
+                    <span>نشر في NEVROOM</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Center Column (Feed + Profile + Composer) -->
+        <section class="md:col-span-9 lg:col-span-6 flex flex-col gap-4">
+            
+            <!-- Top Filter Bar & Categories -->
+            <div id="mainTopFilterBar" class="bg-white dark:bg-slate-900 rounded-3xl p-3 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col gap-2">
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="switchTab('all')" id="tab-all" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-indigo-600 text-white shadow-sm">الحديثة</button>
+                        <button onclick="switchTab('popular')" id="tab-popular" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">الشائعة 🔥</button>
+                        <button onclick="switchTab('saved')" id="tab-saved" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">المحفوظات 🔖</button>
+                        <button onclick="openFullProfileView()" id="tab-profileView" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">البروفيل 👤</button>
+                    </div>
+                </div>
+
+                <!-- Category Chips -->
+                <div class="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar text-xs">
+                    <span class="text-slate-400 font-medium whitespace-nowrap pl-1">الفئة:</span>
+                    <button onclick="filterCategory('all')" id="cat-all" class="cat-chip px-3 py-1 rounded-full font-semibold border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 whitespace-nowrap">الكل</button>
+                    <button onclick="filterCategory('تقنية')" id="cat-تقنية" class="cat-chip px-3 py-1 rounded-full font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 whitespace-nowrap">💻 تقنية</button>
+                    <button onclick="filterCategory('برمجة')" id="cat-برمجة" class="cat-chip px-3 py-1 rounded-full font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 whitespace-nowrap">🚀 برمجة</button>
+                    <button onclick="filterCategory('تصميم')" id="cat-تصميم" class="cat-chip px-3 py-1 rounded-full font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 whitespace-nowrap">🎨 تصميم</button>
+                    <button onclick="filterCategory('أخبار')" id="cat-أخبار" class="cat-chip px-3 py-1 rounded-full font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 whitespace-nowrap">📰 أخبار</button>
+                    <button onclick="filterCategory('يوميات')" id="cat-يوميات" class="cat-chip px-3 py-1 rounded-full font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 whitespace-nowrap">☕ يوميات</button>
+                </div>
+            </div>
+
+            <!-- Comprehensive Profile Section (Facebook + Twitter Style) -->
+            <div id="comprehensiveProfileSection" class="hidden bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm animate-fade-in">
+                <!-- Cover Image -->
+                <div class="h-44 sm:h-56 bg-slate-800 relative group overflow-hidden">
+                    <img id="profCoverImg" src="" class="w-full h-full object-cover">
+                    <button onclick="openProfileModal()" class="absolute top-3 left-3 bg-slate-900/70 hover:bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-xl backdrop-blur-md transition-all">
+                        <i class="fa-solid fa-camera opacity-80"></i> تغيير الغلاف
+                    </button>
+                </div>
+
+                <!-- Profile Header Details -->
+                <div class="px-4 sm:px-6 pb-6 relative">
+                    <div class="flex flex-wrap justify-between items-end -mt-16 sm:-mt-20 mb-4 gap-2">
+                        <div class="relative">
+                            <img id="profAvatarImg" src="" class="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white dark:border-slate-900 shadow-xl">
+                            <span id="profOnlineRing" class="absolute bottom-2 left-2 bg-emerald-500 border-2 border-white dark:border-slate-900 w-5 h-5 rounded-full"></span>
+                        </div>
+
+                        <!-- Profile Action Buttons -->
+                        <div class="flex items-center gap-2 mt-2 sm:mt-0">
+                            <button id="profEditBtn" onclick="openProfileModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-2xl border border-slate-200 dark:border-slate-700 transition-all">
+                                <i class="fa-solid fa-pen-to-square"></i> تعديل البروفيل
+                            </button>
+                            <button id="profFollowBtn" onclick="toggleFollowTargetUser()" class="hidden px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-2xl shadow-md transition-all">
+                                + متابعة
+                            </button>
+                            <button onclick="openVerifRequestModal()" title="طلب توثيق الحساب" class="p-2 bg-amber-50 dark:bg-amber-950/50 text-amber-600 rounded-2xl border border-amber-200 dark:border-amber-800">
+                                <i class="fa-solid fa-certificate text-base"></i>
+                            </button>
+                            <button onclick="openBotForUser()" title="تشغيل بوت زيادة المتابعين والتفاعل له" class="p-2 bg-purple-50 dark:bg-purple-950/50 text-purple-600 rounded-2xl border border-purple-200 dark:border-purple-800">
+                                <i class="fa-solid fa-robot text-base"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Name, Handle & Bio -->
+                    <div class="space-y-2">
+                        <div>
+                            <h2 id="profName" class="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                <span>...</span>
+                                <span id="profBadge"></span>
+                            </h2>
+                            <p id="profHandle" class="text-xs text-slate-400 font-semibold" dir="ltr">@...</p>
+                        </div>
+
+                        <p id="profBio" class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium">...</p>
+
+                        <!-- Additional Details -->
+                        <div class="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-1">
+                            <span id="profEmailRow" class="flex items-center gap-1.5"><i class="fa-solid fa-envelope text-indigo-500"></i> <span id="profEmailVal">...</span></span>
+                            <span id="profLocation" class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-indigo-500"></i> <span>الرياض، السعودية</span></span>
+                            <span id="profWebsite" class="flex items-center gap-1.5"><i class="fa-solid fa-link text-indigo-500"></i> <a href="#" class="text-indigo-600 hover:underline">nevroom.app</a></span>
+                            <span id="profJoined" class="flex items-center gap-1.5"><i class="fa-regular fa-calendar-check text-slate-400"></i> <span id="profJoinedVal">انضم في 2026</span></span>
+                        </div>
+
+                        <!-- Full Profile Stats Row -->
+                        <div id="profStatsBox" class="grid grid-cols-4 gap-2 border-y border-slate-100 dark:border-slate-800 py-3 my-3 text-center">
+                            <div>
+                                <span id="profPostsStat" class="block font-black text-slate-800 dark:text-slate-100 text-base">0</span>
+                                <span class="text-[11px] text-slate-400 font-semibold">المنشورات</span>
+                            </div>
+                            <div>
+                                <span id="profFollowersStat" class="block font-black text-slate-800 dark:text-slate-100 text-base">0</span>
+                                <span class="text-[11px] text-slate-400 font-semibold">المتابعون</span>
+                            </div>
+                            <div>
+                                <span id="profFollowingStat" class="block font-black text-slate-800 dark:text-slate-100 text-base">0</span>
+                                <span class="text-[11px] text-slate-400 font-semibold">يتابعهم</span>
+                            </div>
+                            <div>
+                                <span id="profLikesStat" class="block font-black text-slate-800 dark:text-slate-100 text-base">0</span>
+                                <span class="text-[11px] text-slate-400 font-semibold">إجمالي اللايكات</span>
+                            </div>
+                        </div>
+
+                        <!-- Profile Sub-Tabs -->
+                        <div class="flex border-b border-slate-100 dark:border-slate-800 text-xs font-bold gap-2 pt-1 no-scrollbar overflow-x-auto">
+                            <button onclick="switchProfileSubTab('posts')" id="profSubTab-posts" class="pb-2.5 px-3 border-b-2 border-indigo-600 text-indigo-600 whitespace-nowrap">📝 المنشورات</button>
+                            <button onclick="switchProfileSubTab('media')" id="profSubTab-media" class="pb-2.5 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">🖼️ الوسائط والصور</button>
+                            <button onclick="switchProfileSubTab('likes')" id="profSubTab-likes" class="pb-2.5 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">❤️ الإعجابات</button>
+                            <button onclick="switchProfileSubTab('about')" id="profSubTab-about" class="pb-2.5 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap">ℹ️ حول والنبذة</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Composer Card -->
+            <div id="composerBox" class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm transition-all">
+                <div class="flex gap-3">
+                    <img id="composerAvatar" src="" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700 flex-shrink-0">
+                    <div class="flex-1">
+                        <textarea id="composerInput" rows="3" oninput="handleComposerInput()" placeholder="ما الجديد في عالمك؟ اكتب مشاركتك في NEVROOM..." class="w-full border-none focus:outline-none focus:ring-0 resize-none text-slate-800 dark:text-slate-100 placeholder-slate-400 bg-transparent text-sm"></textarea>
+
+                        <!-- Selected Image Preview -->
+                        <div id="composerImagePreview" class="hidden relative mt-2 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                            <img id="previewImg" src="" class="w-full h-48 object-cover">
+                            <button onclick="clearSelectedImage()" class="absolute top-2 left-2 bg-slate-900/80 text-white rounded-full w-7 h-7 flex items-center justify-center">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- Options & Actions Row -->
+                        <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <!-- Image Attachment Dropdown -->
+                                <div id="composerImgBtnWrapper" class="relative">
+                                    <button onclick="togglePresetMenu()" class="p-2 text-slate-500 hover:text-indigo-600 rounded-xl text-xs font-bold flex items-center gap-1">
+                                        <i class="fa-regular fa-image text-base text-indigo-500"></i>
+                                        <span class="hidden sm:inline">إرفاق صورة</span>
+                                    </button>
+                                    <div id="presetMenu" class="hidden absolute right-0 top-full mt-1 z-30 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-2 grid grid-cols-2 gap-2">
+                                        <button onclick="selectPreset('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800')" class="h-14 rounded-lg overflow-hidden border hover:border-indigo-500 relative">
+                                            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200" class="w-full h-full object-cover">
+                                            <span class="absolute bottom-0 inset-x-0 bg-black/60 text-[9px] text-white text-center">تقنية</span>
+                                        </button>
+                                        <button onclick="selectPreset('https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800')" class="h-14 rounded-lg overflow-hidden border hover:border-indigo-500 relative">
+                                            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=200" class="w-full h-full object-cover">
+                                            <span class="absolute bottom-0 inset-x-0 bg-black/60 text-[9px] text-white text-center">برمجة</span>
+                                        </button>
+                                        <button onclick="selectPreset('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800')" class="h-14 rounded-lg overflow-hidden border hover:border-indigo-500 relative">
+                                            <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200" class="w-full h-full object-cover">
+                                            <span class="absolute bottom-0 inset-x-0 bg-black/60 text-[9px] text-white text-center">إبداع</span>
+                                        </button>
+                                        <button onclick="selectPreset('https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800')" class="h-14 rounded-lg overflow-hidden border hover:border-indigo-500 relative">
+                                            <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=200" class="w-full h-full object-cover">
+                                            <span class="absolute bottom-0 inset-x-0 bg-black/60 text-[9px] text-white text-center">أفكار</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <label class="p-2 text-slate-500 hover:text-emerald-600 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-mobile-screen text-base text-emerald-500"></i><span class="hidden sm:inline">من الهاتف</span><input type="file" accept="image/*" class="hidden" onchange="pickComposerImage(this)"></label>
+
+                            <!-- Mood Picker -->
+                                <select id="composerMood" class="text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl px-2 py-1.5 border-none">
+                                    <option value="متحمس 🚀">🚀 متحمس</option>
+                                    <option value="أروّق ☕">☕ أروّق</option>
+                                    <option value="فكرة 💡">💡 فكرة جديدة</option>
+                                    <option value="إبداع 🎨">🎨 تصميم وإبداع</option>
+                                    <option value="خبر 📰">📰 خبر مهم</option>
+                                </select>
+
+                                <!-- Privacy Level -->
+                                <select id="composerPrivacy" class="text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl px-2 py-1.5 border-none">
+                                    <option value="public">🌎 عام للجميع</option>
+                                    <option value="followers">👥 للمتابعين فقط</option>
+                                    <option value="private">🔒 خاص بي فقط</option>
+                                </select>
+
+                                <!-- Post Category -->
+                                <select id="composerCategory" class="text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl px-2 py-1.5 border-none">
+                                    <option value="عام">☕ عام</option>
+                                    <option value="تقنية">💻 تقنية</option>
+                                    <option value="برمجة">🚀 برمجة</option>
+                                    <option value="تصميم">🎨 تصميم</option>
+                                    <option value="أخبار">📰 أخبار</option>
+                                    <option value="يوميات">☕ يوميات</option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center gap-2 mr-auto">
+                                <span id="composerCharCount" class="text-xs text-slate-400 font-mono">0/280</span>
+                                <button onclick="publishPost()" id="publishBtn" disabled class="px-5 py-2 bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md shadow-indigo-500/20 transition-all">
+                                    نشر في NEVROOM
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed Container -->
+            <div id="postsFeed" class="flex flex-col gap-4"></div>
+
+            <!-- Empty Feed State -->
+            <div id="emptyFeed" class="hidden bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center">
+                <div class="w-16 h-16 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 rounded-full flex items-center justify-center text-2xl mx-auto mb-3">
+                    <i class="fa-solid fa-inbox"></i>
+                </div>
+                <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base mb-1">لا توجد منشورات مطابقة</h3>
+                <p class="text-xs text-slate-500 max-w-sm mx-auto mb-4">قم بنشر أول مشاركة أو تغيير فئة التصفية والبحث.</p>
+                <button onclick="switchTab('all')" class="px-4 py-2 bg-indigo-600 text-white font-bold text-xs rounded-xl">عرض جميع المنشورات</button>
+            </div>
+
+        </section>
+
+        <!-- Left Sidebar (Trending + Growth Bot Widget) -->
+        <aside id="mainSidebarLeft" class="md:col-span-3 hidden lg:block">
+            <div class="sticky top-20 flex flex-col gap-4">
+                
+                <!-- Trending Now Widget -->
+                <div id="trendingWidget" class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-black text-slate-800 dark:text-slate-100 text-sm mb-3 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-trend-up text-indigo-600"></i> الرائج الآن في NEVROOM</span>
+                        <span class="text-[10px] bg-indigo-50 dark:bg-indigo-950 text-indigo-600 px-2 py-0.5 rounded-full font-bold">مُحدث</span>
+                    </h3>
+                    <div class="space-y-2.5 text-xs">
+                        <div onclick="filterCategory('تقنية')" class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60 p-2 rounded-xl transition-colors">
+                            <span class="text-[10px] text-slate-400 block">تقنية • متداول بكثرة</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 block">#NEVROOM_108_SETTINGS</span>
+                            <span class="text-[10px] text-slate-400">18.2 ألف منشور</span>
+                        </div>
+                        <div onclick="filterCategory('برمجة')" class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60 p-2 rounded-xl transition-colors">
+                            <span class="text-[10px] text-slate-400 block">برمجة • الأكثر مناقشة</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 block">#الذكاء_الاصطناعي</span>
+                            <span class="text-[10px] text-slate-400">12.9 ألف منشور</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Growth Bot Widget Card -->
+                <div id="botSidebarWidget" class="bg-gradient-to-br from-purple-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-4 shadow-lg border border-purple-500/20">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-robot text-amber-400 text-xl"></i>
+                        <h4 class="font-bold text-sm">بوت النمو والتفاعل ⚡</h4>
+                    </div>
+                    <p class="text-xs text-purple-200 leading-relaxed mb-3">تزويد آلي للمتابعين، واللايكات والتعليقات الذكية لأي منشور بضغطة زر واحدة.</p>
+                    <button onclick="openBotModal()" class="w-full py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 text-xs font-black rounded-xl shadow-md transition-all">
+                        فتح لوحة البوت الآن 🤖
+                    </button>
+                </div>
+
+                <!-- System Info Card -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                            <span>تحديث التصفح المباشر</span>
+                        </h3>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">نشط ✨</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-relaxed mb-3">
+                        تمت إزالة طبقات التعتيم بالكامل. تعمل المنصة الآن بمرونة تامة مع حماية من التكبير والقفز المفاجئ.
+                    </p>
+                    <button data-admin-only onclick="handleAdminControlClick()" class="w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-all">
+                        لوحة تحكم الأدمن (108+ إعداد)
+                    </button>
+                </div>
+
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- 1. GROWTH BOT MODAL -->
+    <!-- ========================================================================= -->
+    <div id="growthBotModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-fade-in max-h-[92vh] overflow-y-auto">
+            <button onclick="closeBotModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-600 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-purple-500/25">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-black text-slate-800 dark:text-slate-100">بوت زيادة المتابعين والتفاعل | NEVROOM Growth</h2>
+                    <p class="text-xs text-slate-400">تزويد آلي للمتابعين واللايكات والتعليقات الذكية بضغطة زر</p>
+                </div>
+            </div>
+
+            <!-- Bot Operation Tabs -->
+            <div class="flex rounded-2xl bg-slate-100 dark:bg-slate-800 p-1 mb-4 text-xs font-bold">
+                <button onclick="switchBotTab('followers')" id="botTab-followers" class="flex-1 py-2 rounded-xl bg-white dark:bg-slate-900 text-purple-600 shadow-sm">👥 زيادة متابعين</button>
+                <button onclick="switchBotTab('likes')" id="botTab-likes" class="flex-1 py-2 rounded-xl text-slate-500 dark:text-slate-400">❤️ زيادة لايكات</button>
+                <button onclick="switchBotTab('comments')" id="botTab-comments" class="flex-1 py-2 rounded-xl text-slate-500 dark:text-slate-400">💬 تعليقات آلية</button>
+                <button onclick="switchBotTab('log')" id="botTab-log" class="flex-1 py-2 rounded-xl text-slate-500 dark:text-slate-400">📜 السجل</button>
+            </div>
+
+            <!-- Followers Form -->
+            <div id="botForm-followers" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اختر الحساب المستهدف:</label>
+                    <select id="botTargetUser" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">عدد المتابعين الجدد:</label>
+                    <div class="flex items-center gap-3">
+                        <input type="range" min="5" max="500" step="5" value="50" id="botFollowersCountRange" oninput="document.getElementById('botFollowersCountVal').textContent = this.value" class="flex-1 accent-purple-600">
+                        <span id="botFollowersCountVal" class="font-bold text-purple-600 text-sm font-mono w-12 text-center">50</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">سرعة التنفيذ:</label>
+                    <select id="botSpeedFollowers" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                        <option value="instant">⚡ تنفيذ فوري مباشر</option>
+                        <option value="gradual">⏳ تنفيذ تدريجي محاكي</option>
+                    </select>
+                </div>
+                <button onclick="runFollowersBot()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-500/25 transition-all">
+                    🚀 بدء تزويد المتابعين الآن
+                </button>
+            </div>
+
+            <!-- Likes Form -->
+            <div id="botForm-likes" class="space-y-3 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اختر المنشور المستهدف:</label>
+                    <select id="botTargetPostLikes" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">عدد اللايكات المطلوبة:</label>
+                    <div class="flex items-center gap-3">
+                        <input type="range" min="10" max="1000" step="10" value="100" id="botLikesCountRange" oninput="document.getElementById('botLikesCountVal').textContent = this.value" class="flex-1 accent-purple-600">
+                        <span id="botLikesCountVal" class="font-bold text-purple-600 text-sm font-mono w-12 text-center">100</span>
+                    </div>
+                </div>
+                <button onclick="runLikesBot()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold rounded-xl shadow-lg transition-all">
+                    ❤️ بدء تزويد اللايكات فوراً
+                </button>
+            </div>
+
+            <!-- Smart Comments Form -->
+            <div id="botForm-comments" class="space-y-3 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اختر المنشور المستهدف:</label>
+                    <select id="botTargetPostComments" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">نماذج التعليقات الذكية (اختيار عشوائي):</label>
+                    <div class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl text-xs space-y-1 text-slate-600 dark:text-slate-300 font-medium">
+                        <p>• "منشور رائع جداً! 🔥👏"</p>
+                        <p>• "إبداع لا يوصف من منصة NEVROOM 🚀"</p>
+                        <p>• "محتوى مميز ينم عن خبرة عالية 💡"</p>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">عدد التعليقات المضافة:</label>
+                    <input type="number" id="botCommentsCount" value="5" min="1" max="20" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <button onclick="runCommentsBot()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold rounded-xl shadow-lg transition-all">
+                    💬 إرسال التعليقات الذكية الآلية
+                </button>
+            </div>
+
+            <!-- Bot Action Logs -->
+            <div id="botForm-log" class="space-y-3 hidden">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-xs mb-2">سجل نشاط البوت المباشر:</h3>
+                <div id="botActivityLogList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+            </div>
+
+            <!-- Bot Progress Bar -->
+            <div id="botProgressBox" class="hidden mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div class="flex justify-between text-xs font-bold text-purple-600 mb-1">
+                    <span>جارٍ التنفيذ بواسطة البوت...</span>
+                    <span id="botProgressPercent">0%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div id="botProgressBar" class="h-full bg-gradient-to-r from-purple-600 to-pink-600 w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 2. HIGH ACCURACY AUTH MODAL (LOGIN & REGISTRATION) -->
+    <!-- ========================================================================= -->
+    <div id="authModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-fade-in">
+            <button onclick="closeAuthModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-2xl font-black mx-auto mb-2 shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-n"></i>
+                </div>
+                <h2 class="text-xl font-black text-slate-800 dark:text-slate-100">أهلاً بك في NEVROOM 👋</h2>
+                <p class="text-sm text-slate-500 mt-1">منصتك للتواصل والمشاركة. سجّل دخولك أو أنشئ حساباً مجانياً في ثوانٍ.</p>
+                <div class="flex justify-center gap-1.5 mt-3 text-[10px] font-bold"><span class="px-2 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600">💬 رسائل خاصة</span><span class="px-2 py-1 rounded-full bg-purple-50 dark:bg-purple-950/40 text-purple-600">📝 منشورات</span><span class="px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600">🛡️ حساب محمي</span></div>
+            </div>
+
+            <div class="flex rounded-2xl bg-slate-100 dark:bg-slate-800 p-1 mb-5 text-xs font-bold">
+                <button onclick="switchAuthTab('login')" id="authTab-login" class="flex-1 py-2 rounded-xl bg-white dark:bg-slate-900 text-indigo-600 shadow-sm">تسجيل الدخول</button>
+                <button onclick="switchAuthTab('register')" id="authTab-register" class="flex-1 py-2 rounded-xl text-slate-500 dark:text-slate-400">حساب جديد</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">البريد الإلكتروني أو اسم المستخدم:</label>
+                    <input type="text" id="loginIdentifier" required placeholder="name@domain.com أو اسم المستخدم" autocomplete="username" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">كلمة المرور:</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <label class="flex items-center gap-2 text-[11px] text-slate-500 cursor-pointer"><input type="checkbox" onchange="document.getElementById('loginPassword').type = this.checked ? 'text' : 'password'"> إظهار كلمة المرور</label>
+                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition-all">
+                    دخول محمي إلى NEVROOM
+                </button>
+            </form>
+
+            <!-- Accurate Registration Form -->
+            <form id="registerForm" onsubmit="handleRegisterSubmit(event)" class="space-y-3 hidden">
+                <div id="signupClosedMsg" class="hidden p-3 bg-red-50 text-red-600 text-xs font-bold rounded-xl text-center">
+                    🚫 التسجيل مغلق حالياً بقرار الإدارة.
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الاسم الكامل:</label>
+                    <input type="text" id="regName" required placeholder="محمد علي" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المستخدم (@handle فريد):</label>
+                    <input type="text" id="regHandle" required dir="ltr" oninput="cleanHandleInput(this)" placeholder="mohammed_dev" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent font-mono">
+                    <span class="text-[10px] text-slate-400 block mt-0.5">أحرف إنجليزية وأرقام وشخطات سفيلة فقط (4 أحرف على الأقل).</span>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">البريد الإلكتروني الصحيح:</label>
+                    <input type="email" id="regEmail" required placeholder="name@domain.com" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">كلمة المرور (8 أحرف على الأقل):</label>
+                    <input type="password" id="regPassword" required minlength="8" placeholder="••••••••" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">تأكيد كلمة المرور:</label>
+                    <input type="password" id="regPasswordConfirm" required minlength="8" placeholder="••••••••" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <button type="submit" id="regSubmitBtn" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition-all">
+                    إنشاء والتحقق من الحساب
+                </button>
+            </form>
+
+            <div id="quickLoginBox" class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+                <span class="text-[11px] text-slate-400 block mb-2">أزرار التجربة الفورية السريعة:</span>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="quickLogin('admin@nevroom.app')" class="py-1.5 px-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 rounded-xl text-[11px] font-bold">
+                        👑 دخول كـ Admin
+                    </button>
+                    <button onclick="quickLogin('abdullah@nevroom.app')" class="py-1.5 px-2 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-300 dark:border-indigo-700 text-indigo-900 dark:text-indigo-200 rounded-xl text-[11px] font-bold">
+                        👤 دخول كمستخدم عادي
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 3. VERIFICATION REQUEST MODAL -->
+    <!-- ========================================================================= -->
+    <div id="verifRequestModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-fade-in">
+            <button onclick="closeVerifRequestModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-certificate"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-slate-100">طلب توثيق حساب NEVROOM</h3>
+                    <p class="text-xs text-slate-400">أرسل بياناتك ليتم مراجعتها من قِبل إدارة المنصة</p>
+                </div>
+            </div>
+
+            <form onsubmit="submitVerifRequest(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">فئة التوثيق المطلوبة:</label>
+                    <select id="verifCategory" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                        <option value="صانع محتوى">🎥 صانع محتوى / مؤثر</option>
+                        <option value="تقنية وبرمجة">💻 تقنية وتطوير برمجيات</option>
+                        <option value="صحافة وإعلام">📰 صحافة وإعلام</option>
+                        <option value="مجتمع ونشاط">🌟 شخصية مجتمعية</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">سبب طلب التوثيق ورابط إثبات الهوية:</label>
+                    <textarea id="verifReason" required rows="3" placeholder="اشرح لماذا يستحق حسابك التوثيق ورابط موقعك الرسمية..." class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent resize-none"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeVerifRequestModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-xs font-bold rounded-xl">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl shadow-md">
+                        إرسال الطلب للإدارة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 4. ADMIN CONTROL CENTER (108+ OPTIONS MODAL) -->
+    <!-- ========================================================================= -->
+    <div id="adminControlModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-6xl w-full h-[94vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-fade-in">
+            
+            <!-- Admin Panel Header -->
+            <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-2xl shadow-lg shadow-amber-500/20">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-black text-base sm:text-lg flex items-center gap-2">
+                            <span>لوحة تحكم الأدمن الحصرية الخارقة</span>
+                            <span class="text-[10px] bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full font-bold">108+ خيار تحكم</span>
+                        </h2>
+                        <p class="text-xs text-slate-300">التحكم الكامل في الوصول، المحتوى، حظر السبام، وبوت النمو</p>
+                    </div>
+                </div>
+
+                <!-- Admin Statistics Counters -->
+                <div class="flex items-center gap-2 text-xs font-mono">
+                    <div class="bg-white/10 px-3 py-1.5 rounded-xl border border-white/10 text-center">
+                        <span class="block text-slate-400 text-[9px]">إجمالي الخيارات</span>
+                        <span id="statTotalSettingsCount" class="font-bold text-amber-400 text-sm">108</span>
+                    </div>
+                    <div class="bg-white/10 px-3 py-1.5 rounded-xl border border-white/10 text-center">
+                        <span class="block text-slate-400 text-[9px]">الإعدادات النشطة</span>
+                        <span id="statActiveSettingsCount" class="font-bold text-emerald-400 text-sm">0</span>
+                    </div>
+                    <div class="bg-white/10 px-3 py-1.5 rounded-xl border border-white/10 text-center">
+                        <span class="block text-slate-400 text-[9px]">حظر التعتيم</span>
+                        <span class="font-bold text-emerald-300 text-sm">مُعطّل ❌</span>
+                    </div>
+                    <button onclick="closeAdminControlModal()" class="w-9 h-9 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Search Input -->
+            <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center gap-3">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+                <input type="text" id="adminSearchInput" oninput="filterAdminOptions(this.value)" placeholder="ابحث في أكثر من 108 خيار إدارة وتوثيق وحماية ومظهر وتراخيص..." class="w-full bg-transparent text-xs text-slate-800 dark:text-slate-100 focus:outline-none py-1">
+                <span class="text-[10px] text-slate-400 font-mono whitespace-nowrap">البحث الحي النشط 🔍</span>
+            </div>
+
+            <!-- Main Panel Body -->
+            <div class="flex-1 overflow-hidden flex flex-col md:flex-row">
+                
+                <!-- Category Sidebar -->
+                <div class="w-full md:w-64 border-b md:border-b-0 md:border-l border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 p-2 overflow-x-auto md:overflow-y-auto flex md:flex-col gap-1 no-scrollbar flex-shrink-0">
+                    <button onclick="switchAdminSection('access')" id="adminTab-access" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-amber-600 bg-amber-50 dark:bg-amber-950/50">
+                        <i class="fa-solid fa-key text-sm w-4"></i>
+                        <span>1. الوصول والتسجيل والصلاحيات</span>
+                    </button>
+                    <button onclick="switchAdminSection('content')" id="adminTab-content" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100">
+                        <i class="fa-solid fa-pen-to-square text-sm w-4"></i>
+                        <span>2. المحتوى والمنشورات والتفاعل</span>
+                    </button>
+                    <button onclick="switchAdminSection('antispam')" id="adminTab-antispam" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100">
+                        <i class="fa-solid fa-ban text-sm w-4 text-red-500"></i>
+                        <span>3. مكافحة السبام والفلترة</span>
+                    </button>
+                    <button onclick="switchAdminSection('privacy')" id="adminTab-privacy" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100">
+                        <i class="fa-solid fa-user-shield text-sm w-4 text-emerald-500"></i>
+                        <span>4. الخصوصية وبيانات الملف</span>
+                    </button>
+                    <button onclick="switchAdminSection('ops')" id="adminTab-ops" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100">
+                        <i class="fa-solid fa-sliders text-sm w-4 text-purple-500"></i>
+                        <span>5. الأداء والتشغيل والواجهة</span>
+                    </button>
+                    <button onclick="switchAdminSection('verif')" id="adminTab-verif" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100">
+                        <i class="fa-solid fa-certificate text-sm w-4 text-amber-500"></i>
+                        <span>6. طلبات التوثيق والمستخدمين</span>
+                    </button>
+                    <button onclick="switchAdminSection('bot')" id="adminTab-bot" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100">
+                        <i class="fa-solid fa-robot text-sm w-4 text-purple-500"></i>
+                        <span>7. بوت النمو والتفاعل السريع</span>
+                    </button>
+                    <button onclick="switchAdminSection('appearance')" id="adminTab-appearance" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100">
+                        <i class="fa-solid fa-palette text-sm w-4"></i>
+                        <span>8. المظهر والخطوط واللمس</span>
+                    </button>
+                    <button onclick="switchAdminSection('users')" id="adminTab-users" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fa-solid fa-users-gear"></i><span>المستخدمون</span></button>
+                        <button onclick="switchAdminSection('extra')" id="adminTab-extra" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"><i class="fa-solid fa-sliders"></i><span>خيارات متقدمة</span></button>
+                        <button onclick="switchAdminSection('dev')" id="adminTab-dev" class="admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100">
+                        <i class="fa-solid fa-database text-sm w-4"></i>
+                        <span>9. النسخ الاحتياطي والسجل الإداري</span>
+                    </button>
+                </div>
+
+                <!-- Section Details Area -->
+                <div class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-6" id="adminContentArea">
+                    
+                    <!-- Section 1: Access & Security -->
+                    <div id="adminSec-access" class="admin-sec-content space-y-4">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm border-b pb-2 dark:border-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-key text-amber-500"></i>
+                            <span>1. إدارة الوصول والتسجيل والصلاحيات</span>
+                        </h3>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">1. السماح بالتسجيل الجديد في المنصة</span>
+                                <span class="text-[11px] text-slate-400">إغلاق أو فتح إمكانية إنشاء حسابات جديدة للمستخدمين</span>
+                            </div>
+                            <input type="checkbox" id="set-allowNewRegistrations" onchange="updateSetting('allowNewRegistrations', this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">2. اشتراط تأكيد البيانات قبل التفعيل</span>
+                                <span class="text-[11px] text-slate-400">طلب التأكيد قبل السماح بالنشر والتفاعل</span>
+                            </div>
+                            <input type="checkbox" id="set-requireEmailVerification" onchange="updateSetting('requireEmailVerification', this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-amber-200 dark:border-amber-900/50">
+                            <div>
+                                <span class="text-xs font-bold text-amber-700 dark:text-amber-400 block">3. وضع الصيانة العام للمنصة (Maintenance Mode) ⚠️</span>
+                                <span class="text-[11px] text-slate-400">عرض لافتة صيانة وحجب النشر عن المستخدمين العاديين مع إبقاء الأدمن قادراً على الإدارة</span>
+                            </div>
+                            <input type="checkbox" id="set-maintenanceMode" onchange="updateSetting('maintenanceMode', this.checked)" class="w-5 h-5 accent-amber-600 cursor-pointer">
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">4. إتاحة أزرار الدخول السريع التجريبية</span>
+                                <span class="text-[11px] text-slate-400">إظهار أو إخفاء أزرار الدخول السريع في نافذة الدخول</span>
+                            </div>
+                            <input type="checkbox" id="set-allowQuickLogin" onchange="updateSetting('allowQuickLogin', this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">5. وضع المنصة قراءة فقط (Read-Only Mode) 🔒</span>
+                                <span class="text-[11px] text-slate-400">منع إضافة منشورات جديدة مع السماح بالتصفح</span>
+                            </div>
+                            <input type="checkbox" id="set-readOnlyMode" onchange="updateSetting('readOnlyMode', this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Content & Posting -->
+                    <div id="adminSec-content" class="admin-sec-content space-y-4 hidden">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm border-b pb-2 dark:border-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-indigo-500"></i>
+                            <span>2. إدارة المحتوى والمنشورات والتفاعل</span>
+                        </h3>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">6. الحد الأقصى لأحرف المنشور (Max Post Length)</span>
+                                <span class="text-[11px] text-slate-400">اختر عدد الأحرف المسموح بها في المنشور الواحد</span>
+                            </div>
+                            <select id="set-maxPostLength" onchange="updateSetting('maxPostLength', parseInt(this.value))" class="text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5">
+                                <option value="280">280 حرف (افتراضي)</option>
+                                <option value="500">500 حرف</option>
+                                <option value="1000">1000 حرف</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">7. السماح بإرفاق الصور في المنشورات</span>
+                            </div>
+                            <input type="checkbox" id="set-allowImageUploads" onchange="updateSetting('allowImageUploads', this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">8. السماح بالتعليقات على المنشورات</span>
+                            </div>
+                            <input type="checkbox" id="set-allowComments" onchange="updateSetting('allowComments', this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Anti-Spam & Moderation -->
+                    <div id="adminSec-antispam" class="admin-sec-content space-y-4 hidden">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm border-b pb-2 dark:border-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-ban text-red-500"></i>
+                            <span>3. مكافحة السبام والإشراف التلقائي والفلترة</span>
+                        </h3>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">9. فلتر الكلمات المسيئة والمحظورة تلقائياً</span>
+                                <span class="text-[11px] text-slate-400">استبدال الألفاظ غير اللائقة بـ (***) تلقائياً</span>
+                            </div>
+                            <input type="checkbox" id="set-enableWordFilter" onchange="updateSetting('enableWordFilter', this.checked)" class="w-5 h-5 accent-red-600 cursor-pointer">
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">10. حظر الروابط المشبوهة أو المختصرة تلقائياً</span>
+                            </div>
+                            <input type="checkbox" id="set-blockSuspiciousLinks" onchange="updateSetting('blockSuspiciousLinks', this.checked)" class="w-5 h-5 accent-red-600 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Privacy & Profile Settings -->
+                    <div id="adminSec-privacy" class="admin-sec-content space-y-4 hidden">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm border-b pb-2 dark:border-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-user-shield text-emerald-500"></i>
+                            <span>4. الخصوصية وبيانات البروفيل</span>
+                        </h3>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">11. إخفاء البريد الإلكتروني من الملف الشخصي العام</span>
+                            </div>
+                            <input type="checkbox" id="set-hideEmailInProfile" onchange="updateSetting('hideEmailInProfile', this.checked)" class="w-5 h-5 accent-emerald-600 cursor-pointer">
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">12. إخفاء أعداد المتابعين للعموم</span>
+                            </div>
+                            <input type="checkbox" id="set-hideFollowerCounts" onchange="updateSetting('hideFollowerCounts', this.checked)" class="w-5 h-5 accent-emerald-600 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Section 5: Operations & Performance -->
+                    <div id="adminSec-ops" class="admin-sec-content space-y-4 hidden">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm border-b pb-2 dark:border-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-purple-500"></i>
+                            <span>5. الأداء والإشعارات والواجهة</span>
+                        </h3>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">13. تفعيل الإشعارات الفورية المنبثقة (Toasts)</span>
+                            </div>
+                            <input type="checkbox" id="set-enableToasts" onchange="updateSetting('enableToasts', this.checked)" class="w-5 h-5 accent-purple-600 cursor-pointer">
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">14. تفعيل الأصوات التفاعلية (Web Audio API)</span>
+                            </div>
+                            <input type="checkbox" id="set-soundsEnabled" onchange="updateSetting('soundsEnabled', this.checked)" class="w-5 h-5 accent-purple-600 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Section 6: Verification Requests -->
+                    <div id="adminSec-verif" class="admin-sec-content space-y-5 hidden">
+                        <div>
+                            <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm border-b pb-2 dark:border-slate-800 flex items-center justify-between">
+                                <span>طلبات التوثيق المعلقة</span>
+                                <span id="pendingVerifBadgeCount" class="bg-amber-500 text-slate-950 text-xs px-2 py-0.5 rounded-full font-bold">0 طلب</span>
+                            </h3>
+                            <div id="verifRequestsList" class="mt-3 space-y-2"></div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+                            <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm mb-3">جميع مستخدمي المنصة (تعديل وتوثيق مباشر)</h3>
+                            <div id="allUsersAdminList" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Section 7: Bot Growth Quick Access -->
+                    <div id="adminSec-bot" class="admin-sec-content space-y-4 hidden">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm border-b pb-2 dark:border-slate-800">7. إعدادات وتشغيل بوت النمو والتفاعل</h3>
+                        <div class="p-4 bg-purple-50 dark:bg-purple-950/40 rounded-2xl border border-purple-200 dark:border-purple-800 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-purple-900 dark:text-purple-200 block">تشغيل واجهة البوت السريعة</span>
+                                <span class="text-[11px] text-purple-700 dark:text-purple-400">تزويد المتابعين واللايكات مباشرة من الأدمن</span>
+                            </div>
+                            <button onclick="openBotModal()" class="px-4 py-2 bg-purple-600 text-white font-bold text-xs rounded-xl shadow-md">
+                                فتح البوت الآن 🤖
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section 8: Appearance & Anti-Zoom -->
+                    <div id="adminSec-appearance" class="admin-sec-content space-y-4 hidden">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm border-b pb-2 dark:border-slate-800">8. المظهر والخطوط والتحكم باللمس</h3>
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">ثيم الواجهة العام</span>
+                            </div>
+                            <select onchange="updateSetting('themePreset', this.value)" id="set-themePreset" class="text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5">
+                                <option value="light">فاتح ☀️</option>
+                                <option value="dark">داكن 🌙</option>
+                                <option value="midnight">أزرق عميق 🌌</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-row flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">حظر التكبير بالنقر المزدوج (Double-tap Zoom)</span>
+                            </div>
+                            <input type="checkbox" id="set-preventDoubleTap" onchange="updateSetting('preventDoubleTap', this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Section 9: Developer & Backup -->
+                    <div id="adminSec-users" class="admin-sec-content space-y-3 hidden"><h3 class="font-bold text-sm border-b pb-2 dark:border-slate-800">إدارة المستخدمين (حظر، صلاحيات، كلمات المرور، حذف)</h3><div id="adminUsersManage" class="space-y-2"></div></div>
+<div id="adminSec-extra" class="admin-sec-content space-y-3 hidden"><h3 class="font-bold text-sm border-b pb-2 dark:border-slate-800">خيارات متقدمة</h3><div class="setting-row flex items-center justify-between gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50"><span class="text-xs font-bold text-slate-800 dark:text-slate-200">تفعيل الرسائل الخاصة</span><input type="checkbox" id="set-enableMessages" onchange="updateSetting('enableMessages', this.checked)" class="w-5 h-5 accent-purple-600"></div><div class="setting-row flex items-center justify-between gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50"><span class="text-xs font-bold text-slate-800 dark:text-slate-200">الفاصل بين المنشورات (ثانية)</span><input id="set-postCooldown" type="number" min="0" max="600" onchange="updateSetting('postCooldown', +this.value||0)" class="w-40 px-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent"></div><div class="setting-row flex items-center justify-between gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50"><span class="text-xs font-bold text-slate-800 dark:text-slate-200">إعلان أعلى الصفحة</span><input id="set-announcement" type="text" maxlength="150" onchange="updateSetting('announcement', this.value.trim())" class="w-40 px-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent"></div><div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50"><span class="text-xs font-bold block mb-1">الكلمات المحظورة (افصل بفاصلة)</span><textarea id="set-bannedWords" rows="2" onchange="updateSetting('bannedWords', this.value.split(',').map(x => x.trim()).filter(Boolean))" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent"></textarea></div></div>
+                    <div id="adminSec-dev" class="admin-sec-content space-y-4 hidden">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm border-b pb-2 dark:border-slate-800">9. النسخ الاحتياطي والسجل الإداري</h3>
+                        <div class="flex gap-2">
+                            <button onclick="exportNevroomDataJSON()" class="px-4 py-2 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-md">تصدير بيانات NEVROOM JSON</button>
+                            <button onclick="resetAllSettingsToDefault()" class="px-4 py-2 bg-red-600 text-white font-bold text-xs rounded-xl shadow-md">إعادة الضبط الافتراضي للجميع</button>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-200 dark:border-slate-800">
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-xs mb-2">سجل الإشراف الإداري (Moderation Log):</h4>
+                            <div id="adminModerationLogList" class="space-y-1.5 max-h-48 overflow-y-auto"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Admin Panel Footer -->
+            <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center justify-between text-xs text-slate-500">
+                <span>NEVROOM Engine v3.5 • Total 108+ Controls Active</span>
+                <button onclick="closeAdminControlModal()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">
+                    حفظ وإغلاق اللوحة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 5. EDIT PROFILE MODAL -->
+    <!-- ========================================================================= -->
+    <div id="profileModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative animate-fade-in max-h-[90vh] overflow-y-auto">
+            <button onclick="closeProfileModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-pen text-indigo-600"></i>
+                <span>تعديل البروفيل الشامل</span>
+            </h3>
+            <form onsubmit="saveProfile(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الاسم الكامل:</label>
+                    <input type="text" id="editName" required class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المستخدم (@handle):</label>
+                    <input type="text" id="editHandle" required dir="ltr" oninput="cleanHandleInput(this)" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">صورة البروفيل (Avatar URL):</label>
+                    <input type="url" id="editAvatar" required class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+<label class="inline-flex items-center gap-1.5 mt-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-xl cursor-pointer"><span>📱 اختيار من الهاتف</span><input type="file" accept="image/*" class="hidden" onchange="pickProfileImage(this, 'editAvatar', 160, 0.75)"></label>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">صورة الغلاف (Cover Photo URL):</label>
+                    <input type="url" id="editCover" required class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+<label class="inline-flex items-center gap-1.5 mt-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-xl cursor-pointer"><span>📱 اختيار من الهاتف</span><input type="file" accept="image/*" class="hidden" onchange="pickProfileImage(this, 'editCover', 900, 0.7)"></label>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الموقع (City/Country):</label>
+                    <input type="text" id="editLocation" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الرابط الشخصي / الموقع الإلكتروني:</label>
+                    <input type="url" id="editWebsite" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">النبذة التعريفية (Bio):</label>
+                    <textarea id="editBio" rows="3" class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent resize-none"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeProfileModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-xs font-bold rounded-xl">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-md">حفظ والتحديث</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Lightbox Modal -->
+    <div id="lightbox" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4" onclick="closeLightbox()">
+        <img id="lightboxImage" src="" class="max-w-full max-h-[90vh] rounded-2xl object-contain">
+        <a id="lightboxDl" download="nevroom-image.jpg" onclick="event.stopPropagation()" class="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-2 bg-white text-slate-900 text-xs font-bold rounded-xl shadow-lg">⬇️ تنزيل الصورة</a>
+    </div>
+
+    <!-- Custom UI Confirmation Modal (Replacing alert/confirm) -->
+    <div id="customConfirmModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-slate-200 dark:border-slate-800 text-center animate-fade-in">
+            <div class="w-12 h-12 bg-red-100 dark:bg-red-950/50 text-red-500 rounded-full flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirmTitle" class="font-bold text-slate-800 dark:text-slate-100 text-sm mb-1">تأكيد الإجراء</h3>
+            <p id="confirmMessage" class="text-xs text-slate-500 mb-4"></p>
+            <div class="flex justify-center gap-2">
+                <button id="confirmCancelBtn" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl">إلغاء</button>
+                <button id="confirmOkBtn" class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl shadow-md">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Host Container -->
+    <div id="toastContainer" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2"></div>
+
+    <!-- ========================================================================= -->
+    <!-- APPLICATION JAVASCRIPT ENGINE & LOGIC -->
+    <!-- ========================================================================= -->
+    <div id="msgModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-3xl w-full h-[85vh] flex flex-col sm:flex-row shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-fade-in">
+            <div class="sm:w-64 border-b sm:border-b-0 sm:border-l border-slate-200 dark:border-slate-800 p-3 overflow-y-auto max-h-40 sm:max-h-none">
+                <div class="flex items-center justify-between mb-2"><h3 class="font-bold text-sm">✉️ الرسائل الخاصة</h3><button onclick="closeMsgModal()" class="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">✕</button></div>
+                <div id="msgUsersList" class="space-y-1"></div>
+            </div>
+            <div class="flex-1 flex flex-col min-h-0">
+                <div id="msgThreadHeader" class="p-3 border-b border-slate-200 dark:border-slate-800 font-bold text-sm">اختر محادثة</div>
+                <div id="msgThread" class="flex-1 overflow-y-auto p-3 space-y-2 selectable-text"></div>
+                <form id="msgForm" onsubmit="sendMessage(event)" class="hidden p-2 border-t border-slate-200 dark:border-slate-800 flex gap-2">
+                    <input id="msgInput" maxlength="500" autocomplete="off" placeholder="اكتب رسالتك..." class="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-xl bg-transparent">
+                    <button class="px-4 bg-indigo-600 text-white text-xs font-bold rounded-xl">إرسال</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Storage Keys under nevroom_v1_ namespace
+        const STORAGE_KEYS = {
+            USER: 'nevroom_v1_user',
+            USERS_LIST: 'nevroom_v1_users_list',
+            POSTS: 'nevroom_v1_posts',
+            SETTINGS: 'nevroom_v1_settings',
+            VERIF_REQUESTS: 'nevroom_v1_verif_requests',
+            BOT_LOG: 'nevroom_v1_bot_log',
+            MODERATION_LOG: 'nevroom_v1_moderation_log',
+            DRAFT_TEXT: 'nevroom_v1_draft_text'
+        };
+
+        // Default Initial Data
+        const DEFAULT_USERS = [
+            {
+                id: 'usr_admin',
+                email: 'admin@nevroom.app',
+                username: 'admin',
+                password: 'admin123',
+                name: 'إدارة NEVROOM',
+                handle: 'nevroom_admin',
+                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
+                cover: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200',
+                bio: 'الحساب الرسمي لإدارة منصة NEVROOM 👑 | الدعم والتحديثات وبوت التفاعل المعتمد',
+                location: 'الرياض، السعودية 🇸🇦',
+                website: 'https://nevroom.app',
+                role: 'admin',
+                verified: true,
+                badgeType: 'admin',
+                verificationStatus: 'verified',
+                followers: 12500,
+                following: 12,
+                totalLikes: 48900,
+                joinedDate: '2026-01-01'
+            },
+            {
+                id: 'usr_abdullah',
+                email: 'abdullah@nevroom.app',
+                username: 'abdullah_dev',
+                password: '123456',
+                name: 'عبدالله العتيبي',
+                handle: 'abdullah_dev',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
+                cover: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200',
+                bio: 'مطور برمجيات وواجهات مستخدم 🚀 | شغوف بالذكاء الاصطناعي وتجربة المستخدم',
+                location: 'جدة، السعودية 🇸🇦',
+                website: 'https://github.com',
+                role: 'user',
+                verified: true,
+                badgeType: 'blue',
+                verificationStatus: 'verified',
+                followers: 1840,
+                following: 320,
+                totalLikes: 14200,
+                joinedDate: '2026-02-15'
+            },
+            {
+                id: 'usr_sara',
+                email: 'sara@nevroom.app',
+                username: 'sara_design',
+                password: '123456',
+                name: 'سارة الشمري',
+                handle: 'sara_design',
+                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200',
+                cover: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1200',
+                bio: 'مصممة هويات بصرية وواجهات مستخدم UI/UX 🎨',
+                location: 'دبي، الإمارات 🇦🇪',
+                website: 'https://behance.net',
+                role: 'user',
+                verified: false,
+                badgeType: 'none',
+                verificationStatus: 'none',
+                followers: 620,
+                following: 190,
+                totalLikes: 3100,
+                joinedDate: '2026-03-10'
+            }
+        ];
+
+        const DEFAULT_POSTS = [
+            {
+                id: 'p1',
+                authorId: 'usr_admin',
+                author: { name: 'إدارة NEVROOM', handle: 'nevroom_admin', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200', role: 'admin', verified: true, badgeType: 'admin' },
+                content: 'مرحباً بكم في منصة NEVROOM! 🚀\nتم إزالة شاشة حظر الشاشة ولقطات الشاشة بالكامل لتفتح المنصة فوراً وبدون أي تعتيم أو إغلاق للجلسة.',
+                image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800',
+                mood: 'متحمس 🚀',
+                privacy: 'public',
+                category: 'تقنية',
+                timestamp: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
+                likes: 412,
+                isLiked: false,
+                isSaved: true,
+                comments: [
+                    { id: 'c1', author: 'عبدالله العتيبي', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200', text: 'الواجهة تفتح فوراً وسريعة جداً بدون أي حجب 🔥', timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString() }
+                ]
+            },
+            {
+                id: 'p2',
+                authorId: 'usr_abdullah',
+                author: { name: 'عبدالله العتيبي', handle: 'abdullah_dev', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200', role: 'user', verified: true, badgeType: 'blue' },
+                content: 'تصفح المنصة سلس والدخول والتفاعل والبروفيل الشامل يعمل بدقة عالية ✨',
+                image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800',
+                mood: 'فكرة 💡',
+                privacy: 'public',
+                category: 'برمجة',
+                timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+                likes: 210,
+                isLiked: true,
+                isSaved: false,
+                comments: []
+            }
+        ];
+
+        // Default 108+ Settings Object
+        const DEFAULT_SETTINGS = {
+            themePreset: 'light',
+            fontFamily: "'Cairo', sans-serif",
+            fontSize: 15,
+            preventDoubleTap: true,
+            preventPinch: true,
+            soundsEnabled: true,
+            soundVolume: 50,
+
+            // Access & Security
+            allowNewRegistrations: true,
+            requireEmailVerification: false,
+            maintenanceMode: false,
+            allowQuickLogin: true,
+            allowMultiSessions: true,
+            readOnlyMode: false,
+
+            // Content & Posting
+            maxPostLength: 280,
+            allowImageUploads: true,
+            allowPostMoods: true,
+            allowComments: true,
+
+            // Anti-Spam
+            enableWordFilter: true,
+            blockSuspiciousLinks: true,
+
+            // Privacy Settings
+            hideEmailInProfile: true,
+            hideExactJoinDate: false,
+            hideFollowerCounts: false,
+
+            // Operations & UI
+            enableToasts: true,
+            enableHaptics: true,
+            showTrendingSidebar: true,
+            showBotSidebarWidget: true,
+            autoSaveDrafts: true,
+            enableMessages: true,
+            postCooldown: 0,
+            announcement: '',
+            bannedWords: ['احتيال', 'سبام', 'شتيمة', 'اختراق']
+        };
+
+        function safeParse(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+
+        // Live Application State
+        let usersList = safeParse(STORAGE_KEYS.USERS_LIST) || JSON.parse(JSON.stringify(DEFAULT_USERS));
+        let currentUser = safeParse(STORAGE_KEYS.USER) || { ...usersList[0] };
+        let posts = safeParse(STORAGE_KEYS.POSTS) || JSON.parse(JSON.stringify(DEFAULT_POSTS));
+        let appSettings = Object.assign({}, DEFAULT_SETTINGS, safeParse(STORAGE_KEYS.SETTINGS) || {});
+
+        let verifRequests = safeParse(STORAGE_KEYS.VERIF_REQUESTS) || [];
+        let botLog = safeParse(STORAGE_KEYS.BOT_LOG) || [];
+        let moderationLog = safeParse(STORAGE_KEYS.MODERATION_LOG) || [];
+
+        let activeTab = 'all';
+        let activeCategory = 'all';
+        let searchQuery = '';
+        let selectedComposerImage = null;
+        let activeProfileUserId = currentUser.id;
+        let activeProfileSubTab = 'posts';
+
+        const BANNED_WORDS = ['احتيال', 'سبام', 'شتيمة', 'اختراق'];
+
+        // Strict Anti-Zoom Touch Mechanics
+        let lastTouchEnd = 0;
+        function applyAntiZoomRules() {
+            document.addEventListener('touchend', function (e) {
+                if (!appSettings.preventDoubleTap) return;
+                const now = Date.now();
+                if (now - lastTouchEnd <= 280) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, { passive: false });
+
+            document.addEventListener('touchmove', function (e) {
+                if (appSettings.preventPinch && e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('gesturestart', function (e) {
+                if (appSettings.preventPinch) e.preventDefault();
+            });
+        }
+
+        // Web Audio API Sound Engine
+        let audioCtx = null;
+        function playBeep(type) {
+            if (!appSettings.soundsEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const volume = (appSettings.soundVolume || 50) / 100 * 0.15;
+                gain.gain.value = volume;
+                const now = audioCtx.currentTime;
+
+                if (type === 'like') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'bot' || type === 'post') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523, now);
+                    osc.frequency.setValueAtTime(783, now + 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        function triggerHaptic() {
+            if (appSettings.enableHaptics && window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(25);
+            }
+        }
+
+        // Apply All Settings to DOM
+        function applyAllSettingsToDOM() {
+            const root = document.documentElement;
+
+            if (appSettings.themePreset === 'dark' || appSettings.themePreset === 'midnight') {
+                root.classList.add('dark');
+            } else {
+                root.classList.remove('dark');
+            }
+
+            if (appSettings.themePreset === 'midnight') {
+                document.body.style.backgroundColor = '#030712';
+            } else {
+                document.body.style.backgroundColor = '';
+            }
+
+            root.style.setProperty('--app-font', appSettings.fontFamily);
+            root.style.setProperty('--app-font-size', `${appSettings.fontSize}px`);
+
+            const maintBanner = document.getElementById('maintenanceBanner');
+            if (appSettings.maintenanceMode) maintBanner?.classList.remove('hidden');
+            else maintBanner?.classList.add('hidden');
+
+            const ann = document.getElementById('announceBar');
+            if (ann) { ann.textContent = appSettings.announcement || ''; ann.classList.toggle('hidden', !appSettings.announcement); }
+
+            const trendWidget = document.getElementById('trendingWidget');
+            if (appSettings.showTrendingSidebar) trendWidget?.classList.remove('hidden');
+            else trendWidget?.classList.add('hidden');
+
+            const botWidget = document.getElementById('botSidebarWidget');
+            if (appSettings.showBotSidebarWidget) botWidget?.classList.remove('hidden');
+            else botWidget?.classList.add('hidden');
+
+            const quickLoginBox = document.getElementById('quickLoginBox');
+            quickLoginBox?.classList.add('hidden');
+
+            localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(appSettings));
+            calculateActiveSettingsCount();
+        }
+
+        function updateSetting(key, val) {
+            triggerHaptic();
+            appSettings[key] = val;
+            applyAllSettingsToDOM();
+            renderApp();
+            showToast('تم حفظ الإعداد ✅');
+        }
+
+        function calculateActiveSettingsCount() {
+            let count = 0;
+            Object.keys(appSettings).forEach(k => {
+                if (JSON.stringify(appSettings[k]) !== JSON.stringify(DEFAULT_SETTINGS[k])) count++;
+            });
+            const el = document.getElementById('statActiveSettingsCount');
+            if (el) el.textContent = count;
+        }
+
+        // Growth Bot Logic
+        function openBotModal() {
+            populateBotOptions();
+            document.getElementById('growthBotModal').classList.remove('hidden');
+        }
+
+        function closeBotModal() {
+            document.getElementById('growthBotModal').classList.add('hidden');
+        }
+
+        function switchBotTab(tab) {
+            ['followers', 'likes', 'comments', 'log'].forEach(t => {
+                document.getElementById(`botForm-${t}`).classList.add('hidden');
+                document.getElementById(`botTab-${t}`).className = "flex-1 py-2 rounded-xl text-slate-500 dark:text-slate-400";
+            });
+            document.getElementById(`botForm-${tab}`).classList.remove('hidden');
+            document.getElementById(`botTab-${tab}`).className = "flex-1 py-2 rounded-xl bg-white dark:bg-slate-900 text-purple-600 shadow-sm font-bold";
+
+            if (tab === 'log') renderBotLog();
+        }
+
+        function populateBotOptions() {
+            const userSelect = document.getElementById('botTargetUser');
+            userSelect.innerHTML = usersList.map(u => `
+                <option value="${u.id}">${escapeHtml(u.name)} (@${escapeHtml(u.handle)}) - [متابعين: ${u.followers}]</option>
+            `).join('');
+
+            const postLikesSelect = document.getElementById('botTargetPostLikes');
+            const postCommentsSelect = document.getElementById('botTargetPostComments');
+            const postOptionsHTML = posts.map(p => `
+                <option value="${p.id}">${escapeHtml(p.author.name)}: "${escapeHtml(p.content.substring(0, 35))}..." [لايكات: ${p.likes}]</option>
+            `).join('');
+
+            postLikesSelect.innerHTML = postOptionsHTML;
+            postCommentsSelect.innerHTML = postOptionsHTML;
+        }
+
+        function runFollowersBot() {
+            const userId = document.getElementById('botTargetUser').value;
+            const count = parseInt(document.getElementById('botFollowersCountRange').value);
+            const user = usersList.find(u => u.id === userId);
+            if (!user) return;
+
+            showBotProgress(() => {
+                user.followers += count;
+                if (user.id === currentUser.id) currentUser.followers = user.followers;
+
+                addBotLogEntry(`زيادة متابعين`, `تمت إضافة +${count} متابع للحساب @${escapeHtml(user.handle)}`);
+                saveAllState();
+                renderApp();
+                playBeep('bot');
+                showToast(`تمت إضافة +${count} متابع للحساب @${user.handle} بنجاح! 🚀`);
+            });
+        }
+
+        function runLikesBot() {
+            const postId = document.getElementById('botTargetPostLikes').value;
+            const count = parseInt(document.getElementById('botLikesCountRange').value);
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+
+            showBotProgress(() => {
+                post.likes += count;
+                const author = usersList.find(u => u.id === post.authorId);
+                if (author) author.totalLikes += count;
+
+                addBotLogEntry(`زيادة لايكات`, `تمت إضافة +${count} لايك للمنشور (${post.id})`);
+                saveAllState();
+                renderApp();
+                playBeep('bot');
+                showToast(`تمت إضافة +${count} لايك للمنشور بنجاح! ❤️`);
+            });
+        }
+
+        function runCommentsBot() {
+            const postId = document.getElementById('botTargetPostComments').value;
+            const count = parseInt(document.getElementById('botCommentsCount').value);
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+
+            const smartComments = [
+                "منشور رائع جداً! 🔥👏",
+                "إبداع لا يوصف من منصة NEVROOM 🚀",
+                "محتوى مميز ينم عن خبرة عالية 💡",
+                "بالتوفيق دائماً، استمر 🎉"
+            ];
+
+            showBotProgress(() => {
+                for (let i = 0; i < count; i++) {
+                    const randomUser = usersList[Math.floor(Math.random() * usersList.length)];
+                    const randomText = smartComments[Math.floor(Math.random() * smartComments.length)];
+                    post.comments.push({
+                        id: 'c_bot_' + Date.now() + '_' + i,
+                        author: randomUser.name,
+                        avatar: randomUser.avatar,
+                        text: randomText,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
+                addBotLogEntry(`تعليقات آلية`, `تمت إضافة ${count} تعليقات ذكية للمنشور (${post.id})`);
+                saveAllState();
+                renderApp();
+                playBeep('bot');
+                showToast(`تم نشر ${count} تعليقات ذكية بنجاح! 💬`);
+            });
+        }
+
+        function showBotProgress(onComplete) {
+            const box = document.getElementById('botProgressBox');
+            const bar = document.getElementById('botProgressBar');
+            const percent = document.getElementById('botProgressPercent');
+            box.classList.remove('hidden');
+            bar.style.width = '0%';
+
+            let p = 0;
+            const interval = setInterval(() => {
+                p += 20;
+                bar.style.width = p + '%';
+                percent.textContent = p + '%';
+                if (p >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        box.classList.add('hidden');
+                        onComplete();
+                    }, 200);
+                }
+            }, 100);
+        }
+
+        function addBotLogEntry(type, desc) {
+            botLog.unshift({
+                id: 'log_' + Date.now(),
+                type: type,
+                desc: desc,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem(STORAGE_KEYS.BOT_LOG, JSON.stringify(botLog));
+        }
+
+        function renderBotLog() {
+            const container = document.getElementById('botActivityLogList');
+            if (botLog.length === 0) {
+                container.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">لا توجد عمليات مسجلة.</div>`;
+            } else {
+                container.innerHTML = botLog.map(l => `
+                    <div class="p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-xs flex justify-between items-center">
+                        <div>
+                            <span class="font-bold text-purple-600 block">[${l.type}]</span>
+                            <span class="text-slate-700 dark:text-slate-300">${l.desc}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">${formatTime(l.timestamp)}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function openBotForUser() {
+            openBotModal();
+            switchBotTab('followers');
+        }
+
+        // Profile View Logic
+        function openFullProfileView(userId = null) {
+            activeProfileUserId = userId || currentUser.id;
+            activeTab = 'profile';
+            renderApp();
+        }
+
+        function renderComprehensiveProfile() {
+            const user = usersList.find(u => u.id === activeProfileUserId) || currentUser;
+            const isMe = user.id === currentUser.id;
+
+            document.getElementById('profCoverImg').src = user.cover || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200';
+            document.getElementById('profAvatarImg').src = user.avatar;
+            document.getElementById('profName').querySelector('span').textContent = user.name;
+            document.getElementById('profBadge').innerHTML = renderBadgeHTML(user);
+            document.getElementById('profHandle').textContent = `@${user.handle}`;
+            document.getElementById('profBio').textContent = user.bio || 'لا توجد نبذة تعريفية مضافة.';
+            document.getElementById('profLocation').querySelector('span').textContent = user.location || 'الرياض، السعودية';
+            document.getElementById('profWebsite').querySelector('a').textContent = user.website || 'nevroom.app';
+
+            const emailRow = document.getElementById('profEmailRow');
+            if (appSettings.hideEmailInProfile && !isMe) {
+                emailRow.classList.add('hidden');
+            } else {
+                emailRow.classList.remove('hidden');
+                document.getElementById('profEmailVal').textContent = user.email;
+            }
+
+            const joinedVal = document.getElementById('profJoinedVal');
+            joinedVal.textContent = `انضم في ${user.joinedDate || '2026-01-01'}`;
+
+            const userPosts = posts.filter(p => p.authorId === user.id);
+            document.getElementById('profPostsStat').textContent = userPosts.length;
+            document.getElementById('profFollowersStat').textContent = user.followers;
+            document.getElementById('profFollowingStat').textContent = user.following;
+            document.getElementById('profLikesStat').textContent = user.totalLikes || 0;
+
+            const editBtn = document.getElementById('profEditBtn');
+            const followBtn = document.getElementById('profFollowBtn');
+
+            if (isMe) {
+                editBtn.classList.remove('hidden');
+                followBtn.classList.add('hidden');
+            } else {
+                editBtn.classList.add('hidden');
+                followBtn.classList.remove('hidden');
+            }
+
+            document.getElementById('comprehensiveProfileSection').classList.remove('hidden');
+        }
+
+        function switchProfileSubTab(sub) {
+            activeProfileSubTab = sub;
+            ['posts', 'media', 'likes', 'about'].forEach(s => {
+                const btn = document.getElementById(`profSubTab-${s}`);
+                if (btn) {
+                    if (s === sub) {
+                        btn.className = "pb-2.5 px-3 border-b-2 border-indigo-600 text-indigo-600 font-bold whitespace-nowrap";
+                    } else {
+                        btn.className = "pb-2.5 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap";
+                    }
+                }
+            });
+            renderApp();
+        }
+
+        function toggleFollowTargetUser() {
+            const user = usersList.find(u => u.id === activeProfileUserId);
+            if (!user) return;
+            user.followers += 1;
+            currentUser.following += 1;
+            saveAllState();
+            renderApp();
+            showToast(`أصبحت الآن تتابع @${user.handle}! 🎉`);
+        }
+
+        function renderBadgeHTML(user) {
+            if (user.role === 'admin' || user.badgeType === 'admin') {
+                return `<i class="fa-solid fa-crown text-amber-500 text-xs" title="حساب أدمن رسمي"></i>`;
+            }
+            if (user.verified || user.badgeType === 'blue') {
+                return `<i class="fa-solid fa-circle-check text-indigo-500 text-xs" title="حساب موثق معتمد"></i>`;
+            }
+            return '';
+        }
+
+        function openVerifRequestModal() {
+            if (currentUser.verified) {
+                showToast('حسابك موثق بالفعل! ✨');
+                return;
+            }
+            document.getElementById('verifRequestModal').classList.remove('hidden');
+        }
+
+        function closeVerifRequestModal() {
+            document.getElementById('verifRequestModal').classList.add('hidden');
+        }
+
+        function submitVerifRequest(e) {
+            e.preventDefault();
+            const cat = document.getElementById('verifCategory').value;
+            const reason = document.getElementById('verifReason').value.trim();
+
+            const req = {
+                id: 'req_' + Date.now(),
+                userId: currentUser.id,
+                userName: currentUser.name,
+                userHandle: currentUser.handle,
+                userAvatar: currentUser.avatar,
+                category: cat,
+                reason: reason,
+                status: 'pending',
+                timestamp: new Date().toISOString()
+            };
+
+            verifRequests.unshift(req);
+            currentUser.verificationStatus = 'pending';
+
+            const idx = usersList.findIndex(u => u.id === currentUser.id);
+            if (idx !== -1) usersList[idx] = currentUser;
+
+            saveAllState();
+            closeVerifRequestModal();
+            renderApp();
+            showToast('تم إرسال طلب التوثيق للإدارة ⏳');
+        }
+
+        function handleAdminControlClick() {
+            if (currentUser.role !== 'admin') { showToast('🔒 لوحة التحكم للمشرفين فقط'); return; }
+            openAdminControlModal();
+        }
+
+        function openAdminControlModal() {
+            if (currentUser.role !== 'admin') return;
+            document.getElementById('adminControlModal').classList.remove('hidden');
+            syncSettingsToFormElements();
+            renderAdminPanelContent();
+        }
+
+        function closeAdminControlModal() {
+            document.getElementById('adminControlModal').classList.add('hidden');
+        }
+
+        function switchAdminSection(secId) {
+            document.querySelectorAll('.admin-tab-btn').forEach(b => {
+                b.className = "admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-slate-600 dark:text-slate-400 hover:bg-slate-100";
+            });
+            document.querySelectorAll('.admin-sec-content').forEach(c => c.classList.add('hidden'));
+
+            const activeBtn = document.getElementById(`adminTab-${secId}`);
+            const activeSec = document.getElementById(`adminSec-${secId}`);
+            if (activeBtn) activeBtn.className = "admin-tab-btn flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap text-amber-600 bg-amber-50 dark:bg-amber-950/50";
+            if (activeSec) activeSec.classList.remove('hidden');
+        }
+
+        function syncSettingsToFormElements() {
+            Object.keys(appSettings).forEach(key => {
+                const el = document.getElementById(`set-${key}`);
+                if (el) {
+                    if (el.type === 'checkbox') el.checked = appSettings[key];
+                    else el.value = appSettings[key];
+                }
+            });
+            calculateActiveSettingsCount();
+        }
+
+        function renderAdminPanelContent() {
+            renderUsersManage();
+            const pendingReqs = verifRequests.filter(r => r.status === 'pending');
+            document.getElementById('pendingVerifBadgeCount').textContent = `${pendingReqs.length} طلبات`;
+
+            const reqsContainer = document.getElementById('verifRequestsList');
+            if (pendingReqs.length === 0) {
+                reqsContainer.innerHTML = `<div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl text-xs text-slate-400 text-center">لا توجد طلبات توثيق معلقة.</div>`;
+            } else {
+                reqsContainer.innerHTML = pendingReqs.map(r => `
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <img src="${escapeHtml(r.userAvatar)}" class="w-8 h-8 rounded-full object-cover">
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800 dark:text-slate-100">${escapeHtml(r.userName)} <span class="text-[10px] text-slate-400" dir="ltr">@${escapeHtml(r.userHandle)}</span></h4>
+                                <span class="text-[10px] text-amber-600 font-bold bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded-full">${escapeHtml(r.category)}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mr-auto">
+                            <button onclick="approveVerification('${r.id}', '${r.userId}')" class="px-3 py-1 bg-emerald-600 text-white font-bold text-xs rounded-xl">موافقة ✨</button>
+                            <button onclick="rejectVerification('${r.id}', '${r.userId}')" class="px-3 py-1 bg-red-600 text-white font-bold text-xs rounded-xl">رفض</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const usersContainer = document.getElementById('allUsersAdminList');
+            usersContainer.innerHTML = usersList.map(u => `
+                <div class="p-2.5 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2 text-xs">
+                    <div class="flex items-center gap-2">
+                        <img src="${escapeHtml(u.avatar)}" class="w-8 h-8 rounded-full object-cover">
+                        <div>
+                            <span class="font-bold block">${escapeHtml(u.name)} ${renderBadgeHTML(u)}</span>
+                            <span class="text-[10px] text-slate-400" dir="ltr">@${escapeHtml(u.handle)}</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleUserVerificationDirect('${u.id}')" class="px-3 py-1 ${u.verified ? 'bg-amber-100 text-amber-800' : 'bg-indigo-600 text-white'} font-bold text-[11px] rounded-xl">
+                        ${u.verified ? 'إلغاء التوثيق ❌' : 'توثيق الحساب 🛡️'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function approveVerification(reqId, userId) {
+            const req = verifRequests.find(r => r.id === reqId);
+            if (req) req.status = 'approved';
+
+            const user = usersList.find(u => u.id === userId);
+            if (user) {
+                user.verified = true;
+                user.badgeType = 'blue';
+                user.verificationStatus = 'verified';
+
+                posts.forEach(p => {
+                    if (p.authorId === userId) {
+                        p.author.verified = true;
+                        p.author.badgeType = 'blue';
+                    }
+                });
+            }
+
+            saveAllState();
+            renderAdminPanelContent();
+            renderApp();
+            showToast('تم توثيق الحساب بالكامل! ✨');
+        }
+
+        function rejectVerification(reqId, userId) {
+            const req = verifRequests.find(r => r.id === reqId);
+            if (req) req.status = 'rejected';
+
+            const user = usersList.find(u => u.id === userId);
+            if (user) user.verificationStatus = 'rejected';
+
+            saveAllState();
+            renderAdminPanelContent();
+            renderApp();
+            showToast('تم رفض طلب التوثيق.');
+        }
+
+        function toggleUserVerificationDirect(userId) {
+            const user = usersList.find(u => u.id === userId);
+            if (user) {
+                user.verified = !user.verified;
+                user.badgeType = user.verified ? 'blue' : 'none';
+                user.verificationStatus = user.verified ? 'verified' : 'none';
+
+                posts.forEach(p => {
+                    if (p.authorId === userId) {
+                        p.author.verified = user.verified;
+                        p.author.badgeType = user.badgeType;
+                    }
+                });
+
+                if (user.id === currentUser.id) currentUser = { ...user };
+            }
+
+            saveAllState();
+            renderAdminPanelContent();
+            renderApp();
+            showToast('تم تحديث التوثيق فورياً!');
+        }
+
+        function filterAdminOptions(q) {
+            const query = q.toLowerCase();
+            document.querySelectorAll('.setting-row').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
+            });
+        }
+
+        // Handle Cleaning & Formatting Username Handle Input
+        function cleanHandleInput(el) {
+            el.value = el.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+        }
+
+        // Accurate Auth & Registration Logic
+        function openAuthModal() {
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            if (!sessionStorage.getItem('nev_session')) return;
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function switchAuthTab(t) {
+            document.getElementById('loginForm').classList.toggle('hidden', t !== 'login');
+            const regForm = document.getElementById('registerForm');
+            regForm.classList.toggle('hidden', t !== 'register');
+
+            const closedMsg = document.getElementById('signupClosedMsg');
+            const submitBtn = document.getElementById('regSubmitBtn');
+            if (!appSettings.allowNewRegistrations) {
+                closedMsg?.classList.remove('hidden');
+                submitBtn?.classList.add('hidden');
+            } else {
+                closedMsg?.classList.add('hidden');
+                submitBtn?.classList.remove('hidden');
+            }
+        }
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('loginIdentifier').value.trim().toLowerCase();
+            const pass = document.getElementById('loginPassword').value.trim();
+            const u = usersList.find(x => [x.email, x.handle, x.username].some(v => String(v || '').toLowerCase() === id));
+            let ok = false;
+            if (u) {
+                const hh = await pwHash(u.hk || u.handle, pass);
+                if (u.pw) ok = u.pw === hh;
+                else if (u.password && u.password === pass) { ok = true; u.pw = hh; u.hk = u.hk || u.handle; delete u.password; }
+            }
+            if (!ok) { showToast('البيانات غير صحيحة. حاول مجدداً!'); return; }
+            if (u.banned) { showToast('🚫 هذا الحساب محظور من قبل الإدارة'); return; }
+            document.getElementById('loginPassword').value = '';
+            startSession(u);
+            showToast(`مرحباً بك مجدداً يا ${u.name}! 👋`);
+        }
+
+        async function handleRegisterSubmit(e) {
+            e.preventDefault();
+            if (!appSettings.allowNewRegistrations) {
+                showToast('التسجيل مغلق حالياً بقرار من الإدارة 🚫');
+                return;
+            }
+
+            const name = document.getElementById('regName').value.trim();
+            const handle = document.getElementById('regHandle').value.trim().toLowerCase();
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('regPassword').value.trim();
+            const passConfirm = document.getElementById('regPasswordConfirm').value.trim();
+
+            if (handle.length < 4) {
+                showToast('اسم المستخدم يجب ألا يقل عن 4 أحرف 🔒');
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('يرجى إدخال بريد إلكتروني صحيح ✉️');
+                return;
+            }
+
+            if (pass.length < 8) { showToast('كلمة المرور 8 أحرف على الأقل 🔑'); return; }
+            if (pass !== passConfirm) {
+                showToast('كلمتا المرور غير متطابقتين ❌');
+                return;
+            }
+
+            const existingEmail = usersList.find(u => u.email.toLowerCase() === email);
+            if (existingEmail) {
+                showToast('هذا البريد الإلكتروني مسجل بالفعل ⚠️');
+                return;
+            }
+
+            const existingHandle = usersList.find(u => u.handle.toLowerCase() === handle);
+            if (existingHandle) {
+                showToast('اسم المستخدم (@handle) مُستخدم بالفعل ⚠️');
+                return;
+            }
+
+            const newUser = {
+                id: 'usr_' + Date.now(),
+                email: email,
+                username: handle,
+                hk: handle, pw: await pwHash(handle, pass),
+                name: name,
+                handle: handle,
+                avatar: makeAvatar(name),
+                cover: makeCover(name),
+                bio: 'مستخدم جديد في منصة NEVROOM 🌟',
+                location: 'الرياض، السعودية 🇸🇦',
+                website: 'https://nevroom.app',
+                role: 'user',
+                verified: false,
+                badgeType: 'none',
+                verificationStatus: 'none',
+                followers: 0,
+                following: 0,
+                totalLikes: 0,
+                joinedDate: new Date().toISOString().split('T')[0]
+            };
+
+            usersList.push(newUser);
+            startSession(newUser);
+            showToast('تم إنشاء الحساب بنجاح وتأكيد الجلسة! 🎉');
+        }
+
+        function quickLogin(email) {
+            showToast('الدخول السريع معطل لأسباب أمنية'); return;
+            const found = usersList.find(u => u.email === email);
+            if (found) {
+                currentUser = found;
+                saveAllState();
+                closeAuthModal();
+                renderApp();
+                showToast(`تم التبديل إلى: ${currentUser.name}`);
+            }
+        }
+
+        // Render App UI
+        function renderApp() {
+            document.getElementById('navAvatar').src = currentUser.avatar;
+            document.getElementById('sideAvatar').src = currentUser.avatar;
+            document.getElementById('sideCoverImg').src = currentUser.cover || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200';
+            document.getElementById('composerAvatar').src = currentUser.avatar;
+            document.getElementById('sideName').querySelector('span').textContent = currentUser.name;
+            document.getElementById('sideBadgeContainer').innerHTML = renderBadgeHTML(currentUser);
+            document.getElementById('sideHandle').textContent = `@${currentUser.handle}`;
+
+            const myPosts = posts.filter(p => p.authorId === currentUser.id);
+            document.getElementById('sidePostsCount').textContent = myPosts.length;
+            document.getElementById('sideFollowersCount').textContent = currentUser.followers;
+            document.getElementById('sideFollowingCount').textContent = currentUser.following;
+            document.getElementById('sideLikesCount').textContent = currentUser.totalLikes || 0;
+
+            const adminLockBadge = document.getElementById('adminLockBadge');
+            if (currentUser.role === 'admin') {
+                adminLockBadge.textContent = '👑 Admin (108+)';
+                adminLockBadge.className = 'hidden sm:inline bg-amber-400 text-slate-950 text-[10px] px-1.5 py-0.5 rounded-full font-bold';
+            } else {
+                adminLockBadge.textContent = '🔒 محمي';
+                adminLockBadge.className = 'hidden sm:inline bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded-full font-mono';
+            }
+
+            document.querySelectorAll('[data-admin-only]').forEach(el => { el.style.display = currentUser.role === 'admin' ? '' : 'none'; });
+            const profileSec = document.getElementById('comprehensiveProfileSection');
+            if (activeTab === 'profile') {
+                renderComprehensiveProfile();
+            } else {
+                profileSec.classList.add('hidden');
+            }
+
+            let filtered = [...posts];
+
+            if (activeTab === 'popular') filtered.sort((a, b) => b.likes - a.likes);
+            else if (activeTab === 'saved') filtered = filtered.filter(p => isSv(p));
+            else if (activeTab === 'profile') {
+                if (activeProfileSubTab === 'posts') filtered = filtered.filter(p => p.authorId === activeProfileUserId);
+                else if (activeProfileSubTab === 'likes') filtered = filtered.filter(p => isLk(p));
+                else if (activeProfileSubTab === 'media') filtered = filtered.filter(p => p.authorId === activeProfileUserId && p.image);
+            } else {
+                filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }
+
+            if (activeCategory !== 'all') filtered = filtered.filter(p => p.category === activeCategory);
+
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = filtered.filter(p => p.content.toLowerCase().includes(q) || p.author.name.toLowerCase().includes(q));
+            }
+
+            const container = document.getElementById('postsFeed');
+            const emptyState = document.getElementById('emptyFeed');
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                container.innerHTML = filtered.map(p => createPostHTML(p)).join('');
+            }
+
+            document.getElementById('savedBadge').textContent = posts.filter(p => isSv(p)).length;
+            updateNavigationUI();
+        }
+
+        function createPostHTML(post) {
+            const isMe = post.authorId === currentUser.id || currentUser.role === 'admin';
+
+            let displayContent = post.content;
+            if (appSettings.enableWordFilter) {
+                (appSettings.bannedWords || BANNED_WORDS).forEach(w => {
+                    const reg = new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                    displayContent = displayContent.replace(reg, '***');
+                });
+            }
+
+            return `
+                <article class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-sm animate-fade-in">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <img src="${escapeHtml(post.author.avatar)}" onclick="openFullProfileView('${post.authorId}')" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700 cursor-pointer">
+                            <div>
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <h3 onclick="openFullProfileView('${post.authorId}')" class="font-bold text-slate-800 dark:text-slate-100 text-sm hover:underline cursor-pointer">${escapeHtml(post.author.name)}</h3>
+                                    ${renderBadgeHTML(post.author)}
+                                    <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-full">${escapeHtml(post.category)}</span>
+                                    ${post.mood ? `<span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full text-slate-600 dark:text-slate-300 font-semibold">${escapeHtml(post.mood)}</span>` : ''}
+                                </div>
+                                <span class="text-xs text-slate-400" dir="ltr">@${escapeHtml(post.author.handle)} • ${formatTime(post.timestamp)}</span>
+                            </div>
+                        </div>
+
+                        ${isMe ? `
+                            <button onclick="deletePost('${post.id}')" title="حذف" class="text-slate-400 hover:text-red-500 p-2 rounded-xl">
+                                <i class="fa-regular fa-trash-can text-sm"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+
+                    <p class="selectable-text text-slate-800 dark:text-slate-200 text-sm leading-relaxed mb-3 font-medium">${escapeHtml(displayContent)}</p>
+
+                    ${post.image ? `
+                        <div class="mb-3 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 cursor-pointer" onclick="openLightbox(this.querySelector('img').src)">
+                            <img src="${post.image}" loading="lazy" class="w-full max-h-96 object-cover hover:scale-105 transition-transform duration-300">
+                        </div>
+                    ` : ''}
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
+                        <button onclick="toggleLike('${post.id}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-red-50 hover:text-red-500 ${isLk(post) ? 'text-red-500 font-bold' : ''}">
+                            <i class="${isLk(post) ? 'fa-solid fa-heart text-red-500 like-animated' : 'fa-regular fa-heart'} text-base"></i>
+                            <span>${post.likes}</span>
+                        </button>
+
+                        <button onclick="toggleComments('${post.id}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+                            <i class="fa-regular fa-comment text-base"></i>
+                            <span>${post.comments.length}</span>
+                        </button>
+
+                        <button onclick="toggleSave('${post.id}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-amber-50 hover:text-amber-500 ${isSv(post) ? 'text-amber-500 font-bold' : ''}">
+                            <i class="${isSv(post) ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'} text-base"></i>
+                            <span>${isSv(post) ? 'محفوظ' : 'حفظ'}</span>
+                        </button>
+
+                        <button onclick="copyLink('${post.id}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-indigo-50 hover:text-indigo-600">
+                            <i class="fa-regular fa-share-from-square text-base"></i>
+                            <span>مشاركة</span>
+                        </button>
+                    </div>
+
+                    <div id="comments-${post.id}" class="hidden mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 p-3 rounded-2xl">
+                        <div class="space-y-2 mb-3 max-h-48 overflow-y-auto">
+                            ${post.comments.map(c => `
+                                <div class="flex items-start gap-2 text-xs">
+                                    <img src="${escapeHtml(c.avatar)}" class="w-6 h-6 rounded-full object-cover mt-0.5">
+                                    <div class="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700 flex-1">
+                                        <div class="flex justify-between font-bold text-slate-800 dark:text-slate-200 mb-0.5">
+                                            <span>${escapeHtml(c.author)}</span>
+                                            <span class="text-[10px] text-slate-400 font-normal">${formatTime(c.timestamp)}</span>
+                                        </div>
+                                        <p class="text-slate-700 dark:text-slate-300">${escapeHtml(c.text)}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="commentInput-${post.id}" placeholder="اكتب تعليقك..." class="flex-1 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none">
+                            <button onclick="addComment('${post.id}')" class="px-3 py-1.5 bg-indigo-600 text-white font-bold text-xs rounded-xl">إرسال</button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        // Post Composer Handlers
+        function handleComposerInput() {
+            const input = document.getElementById('composerInput');
+            const count = document.getElementById('composerCharCount');
+            const btn = document.getElementById('publishBtn');
+            const len = input.value.length;
+            const max = appSettings.maxPostLength || 280;
+
+            if (len > max) {
+                input.value = input.value.substring(0, max);
+            }
+
+            count.textContent = `${input.value.length}/${max}`;
+            btn.disabled = input.value.trim().length === 0 && !selectedComposerImage;
+
+            if (appSettings.autoSaveDrafts) {
+                localStorage.setItem(STORAGE_KEYS.DRAFT_TEXT, input.value);
+            }
+        }
+
+        function togglePresetMenu() {
+            document.getElementById('presetMenu').classList.toggle('hidden');
+        }
+
+        function selectPreset(url) {
+            if (appSettings.allowImageUploads === false && currentUser.role !== 'admin') { showToast('رفع الصور معطل حالياً بقرار الإدارة 🚫'); return; }
+            selectedComposerImage = url;
+            document.getElementById('previewImg').src = url;
+            document.getElementById('composerImagePreview').classList.remove('hidden');
+            document.getElementById('presetMenu').classList.add('hidden');
+            handleComposerInput();
+        }
+
+        function clearSelectedImage() {
+            selectedComposerImage = null;
+            document.getElementById('composerImagePreview').classList.add('hidden');
+            handleComposerInput();
+        }
+
+        function publishPost() {
+            if (appSettings.readOnlyMode && currentUser.role !== 'admin') {
+                showToast('🔒 المنصة في وضع القراءة فقط حالياً بقرار من الإدارة');
+                return;
+            }
+
+            if (appSettings.maintenanceMode && currentUser.role !== 'admin') {
+                showToast('⚠️ المنصة في وضع الصيانة العام');
+                return;
+            }
+
+            const input = document.getElementById('composerInput');
+            const cat = document.getElementById('composerCategory').value;
+            const mood = document.getElementById('composerMood').value;
+            const privacy = document.getElementById('composerPrivacy').value;
+            const text = input.value.trim();
+
+            if (!text && !selectedComposerImage) return;
+            if (text.length > (appSettings.maxPostLength || 280)) { showToast('المنشور أطول من الحد المسموح ✂️'); return; }
+            const cd = (appSettings.postCooldown || 0) * 1000;
+            if (cd && currentUser.role !== 'admin' && Date.now() - lastPostAt < cd) { showToast('انتظر قليلاً قبل النشر مجدداً ⏳'); return; }
+            lastPostAt = Date.now();
+
+            const newP = {
+                id: 'p_' + Date.now(),
+                authorId: currentUser.id,
+                author: {
+                    name: currentUser.name,
+                    handle: currentUser.handle,
+                    avatar: currentUser.avatar,
+                    role: currentUser.role,
+                    verified: currentUser.verified,
+                    badgeType: currentUser.badgeType
+                },
+                content: text,
+                image: selectedComposerImage || '',
+                category: cat,
+                mood: mood,
+                privacy: privacy,
+                timestamp: new Date().toISOString(),
+                likes: 0,
+                isLiked: false,
+                isSaved: false,
+                comments: []
+            };
+
+            posts.unshift(newP);
+            saveAllState();
+
+            input.value = '';
+            localStorage.removeItem(STORAGE_KEYS.DRAFT_TEXT);
+            clearSelectedImage();
+            playBeep('post');
+            triggerHaptic();
+            renderApp();
+            showToast('تم نشر مشاركتك على NEVROOM! 🚀');
+        }
+
+        function toggleLike(id) {
+            if (appSettings.maintenanceMode && currentUser.role !== 'admin') { showToast('⚠️ المنصة في وضع الصيانة'); return; }
+            const p = posts.find(x => x.id === id); if (!p) return;
+            p.likedBy = p.likedBy || [];
+            const had = p.likedBy.includes(currentUser.id);
+            p.likedBy = had ? p.likedBy.filter(i => i !== currentUser.id) : [...p.likedBy, currentUser.id];
+            p.likes = Math.max(0, (p.likes || 0) + (had ? -1 : 1));
+            const author = usersList.find(u => u.id === p.authorId);
+            if (author) author.totalLikes = Math.max(0, (author.totalLikes || 0) + (had ? -1 : 1));
+            if (!had) playBeep('like');
+            triggerHaptic(); saveAllState(); renderApp();
+        }
+
+        function toggleSave(id) {
+            const p = posts.find(x => x.id === id); if (!p) return;
+            p.savedBy = p.savedBy || [];
+            const had = p.savedBy.includes(currentUser.id);
+            p.savedBy = had ? p.savedBy.filter(i => i !== currentUser.id) : [...p.savedBy, currentUser.id];
+            saveAllState(); renderApp();
+            showToast(had ? 'تمت الإزالة من المحفوظات' : 'تم الحفظ في المحفوظات 🔖');
+        }
+
+        function toggleComments(id) {
+            const el = document.getElementById(`comments-${id}`);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        function addComment(id) {
+            if (!appSettings.allowComments) {
+                showToast('التعليقات معطلة حالياً بقرار الإدارة 🚫');
+                return;
+            }
+
+            const input = document.getElementById(`commentInput-${id}`);
+            const text = input.value.trim();
+            if (!text) return;
+
+            const p = posts.find(x => x.id === id);
+            if (!p) return;
+
+            p.comments.push({
+                id: 'c_' + Date.now(),
+                author: currentUser.name,
+                avatar: currentUser.avatar,
+                text: text,
+                timestamp: new Date().toISOString()
+            });
+
+            saveAllState();
+            renderApp();
+            setTimeout(() => {
+                const el = document.getElementById(`comments-${id}`);
+                if (el) el.classList.remove('hidden');
+            }, 50);
+        }
+
+        function deletePost(id) {
+            openCustomConfirm('حذف المنشور', 'هل أنت متأكد من حذف هذا المنشور نهائياً؟', function () {
+                posts = posts.filter(x => x.id !== id);
+                saveAllState();
+                renderApp();
+                showToast('تم حذف المنشور.');
+            });
+        }
+
+        function copyLink(id) {
+            const dummy = window.location.href.split('#')[0] + `#nevroom-post-${id}`;
+            const ta = document.createElement("textarea");
+            ta.value = dummy;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast('تم نسخ رابط مشاركة NEVROOM! 📋');
+        }
+
+        function openProfileModal() {
+            document.getElementById('editName').value = currentUser.name;
+            document.getElementById('editHandle').value = currentUser.handle;
+            document.getElementById('editAvatar').value = currentUser.avatar;
+            document.getElementById('editCover').value = currentUser.cover || '';
+            document.getElementById('editLocation').value = currentUser.location || '';
+            document.getElementById('editWebsite').value = currentUser.website || '';
+            document.getElementById('editBio').value = currentUser.bio || '';
+            document.getElementById('profileModal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            const newHandle = document.getElementById('editHandle').value.trim().toLowerCase();
+
+            if (newHandle !== currentUser.handle) {
+                const existing = usersList.find(u => u.handle.toLowerCase() === newHandle && u.id !== currentUser.id);
+                if (existing) {
+                    showToast('اسم المستخدم (@handle) مستخدم بالفعل للحساب آخر ⚠️');
+                    return;
+                }
+            }
+
+            currentUser.name = document.getElementById('editName').value.trim();
+            currentUser.handle = newHandle;
+            currentUser.username = newHandle;
+            currentUser.avatar = document.getElementById('editAvatar').value.trim();
+            currentUser.cover = document.getElementById('editCover').value.trim();
+            currentUser.location = document.getElementById('editLocation').value.trim();
+            currentUser.website = document.getElementById('editWebsite').value.trim();
+            currentUser.bio = document.getElementById('editBio').value.trim();
+
+            const idx = usersList.findIndex(u => u.id === currentUser.id);
+            if (idx !== -1) usersList[idx] = currentUser;
+
+            posts.forEach(p => {
+                if (p.authorId === currentUser.id) {
+                    p.author.name = currentUser.name;
+                    p.author.handle = currentUser.handle;
+                    p.author.avatar = currentUser.avatar;
+                }
+            });
+
+            saveAllState();
+            closeProfileModal();
+            renderApp();
+            showToast('تم تحديث بيانات البروفيل الشامل بنجاح!');
+        }
+
+        function switchTab(t) {
+            activeTab = t;
+            renderApp();
+        }
+
+        function filterCategory(c) {
+            activeCategory = c;
+            renderApp();
+        }
+
+        function handleGlobalSearch(v) {
+            searchQuery = v;
+            document.getElementById('clearSearchBtn').classList.toggle('hidden', v === '');
+            renderApp();
+        }
+
+        function clearGlobalSearch() {
+            document.getElementById('globalSearchInput').value = '';
+            handleGlobalSearch('');
+        }
+
+        function updateNavigationUI() {
+            ['all', 'popular', 'saved', 'profile'].forEach(t => {
+                const navBtn = document.getElementById(`nav-${t}`);
+                const tabBtn = document.getElementById(`tab-${t}`);
+                if (navBtn) {
+                    navBtn.className = activeTab === t ?
+                        "nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10" :
+                        "nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800";
+                }
+                if (tabBtn) {
+                    tabBtn.className = activeTab === t ?
+                        "px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all bg-indigo-600 text-white shadow-sm" :
+                        "px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800";
+                }
+            });
+        }
+
+        function saveAllState() {
+            try { _saveAllRaw(); } catch (e) { showToast('⚠️ مساحة التخزين ممتلئة. احذف بعض الصور أو المنشورات'); }
+        }
+
+        function _saveAllRaw() {
+            localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(currentUser));
+            localStorage.setItem(STORAGE_KEYS.USERS_LIST, JSON.stringify(usersList));
+            localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(posts));
+            localStorage.setItem(STORAGE_KEYS.VERIF_REQUESTS, JSON.stringify(verifRequests));
+            localStorage.setItem('nevroom_messages', JSON.stringify(messages));
+        }
+
+        function openCustomConfirm(title, message, onConfirm) {
+            const modal = document.getElementById('customConfirmModal');
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+
+            const okBtn = document.getElementById('confirmOkBtn');
+            const cancelBtn = document.getElementById('confirmCancelBtn');
+
+            const cleanup = () => {
+                modal.classList.add('hidden');
+                okBtn.onclick = null;
+                cancelBtn.onclick = null;
+            };
+
+            okBtn.onclick = () => {
+                cleanup();
+                onConfirm();
+            };
+            cancelBtn.onclick = cleanup;
+
+            modal.classList.remove('hidden');
+        }
+
+        function resetAllSettingsToDefault() {
+            openCustomConfirm('إعادة الضبط الشامل', 'هل أنت متأكد من إعادة كافة الإعدادات والبيانات للوضع الافتراضي؟', function () {
+                appSettings = Object.assign({}, DEFAULT_SETTINGS);
+
+                usersList = JSON.parse(JSON.stringify(DEFAULT_USERS));
+                currentUser = { ...usersList[0] };
+                posts = JSON.parse(JSON.stringify(DEFAULT_POSTS));
+                verifRequests = [];
+                botLog = [];
+                moderationLog = [];
+                messages = [];
+                localStorage.removeItem(STORAGE_KEYS.DRAFT_TEXT);
+                migratePasswords();
+
+                saveAllState();
+                applyAllSettingsToDOM();
+                syncSettingsToFormElements();
+                renderApp();
+                showToast('تمت إعادة ضبط NEVROOM بنجاح 🔄');
+            });
+        }
+
+        function exportNevroomDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ settings: appSettings, users: usersList, posts: posts, verifRequests: verifRequests, botLog: botLog, moderationLog: moderationLog, messages: messages }, null, 2));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", `nevroom_backup_${Date.now()}.json`);
+            document.body.appendChild(dl);
+            dl.click();
+            dl.remove();
+            showToast('تم تصدير نسخة JSON الكاملة لـ NEVROOM! 📥');
+        }
+
+        function showToast(msg) {
+            if (!appSettings.enableToasts) return;
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = "bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2 animate-bounce";
+            const sp = document.createElement('span'); sp.textContent = msg; toast.appendChild(sp);
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2800);
+        }
+
+        function openLightbox(url) {
+            document.getElementById('lightboxImage').src = url;
+            document.getElementById('lightboxDl').href = url;
+            document.getElementById('lightbox').classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.add('hidden');
+        }
+
+        function focusComposer() {
+            const input = document.getElementById('composerInput');
+            input.focus();
+            input.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function formatTime(iso) {
+            const past = new Date(iso);
+            const diffMin = Math.floor((new Date() - past) / 60000);
+            if (diffMin < 1) return 'الآن';
+            if (diffMin < 60) return `منذ ${diffMin} د`;
+            const diffHr = Math.floor(diffMin / 60);
+            if (diffHr < 24) return `منذ ${diffHr} س`;
+            return past.toLocaleDateString('ar-SA');
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // ===== إضافات: جلسة، تشفير، رسائل، إدارة المستخدمين =====
+        let messages = safeParse('nevroom_messages') || [];
+        let lastPostAt = 0, activeChatId = null, searchTimer;
+        const isLk = p => (p.likedBy || []).includes(currentUser.id);
+        const isSv = p => (p.savedBy || []).includes(currentUser.id);
+        function debouncedSearch(v) { clearTimeout(searchTimer); searchTimer = setTimeout(() => handleGlobalSearch(v), 250); }
+        async function pwHash(h, p) {
+            const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('nevroom|' + String(h).toLowerCase() + '|' + p));
+            return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
+        }
+        async function migratePasswords() {
+            let ch = false;
+            for (const u of usersList) if (u.password) { u.hk = u.handle; u.pw = await pwHash(u.hk, u.password); delete u.password; ch = true; }
+            if (ch) saveAllState();
+        }
+        function startSession(u) {
+            currentUser = u; activeProfileUserId = u.id; activeTab = 'all';
+            sessionStorage.setItem('nev_session', u.id);
+            saveAllState(); closeAuthModal(); applyAllSettingsToDOM(); renderApp();
+        }
+        function openAuthGate() {
+            const m = document.getElementById('authModal');
+            m.classList.remove('bg-slate-950/70', 'backdrop-blur-md');
+            m.classList.add('bg-slate-100', 'dark:bg-slate-950');
+            const x = m.querySelector('button[onclick="closeAuthModal()"]'); if (x) x.classList.add('hidden');
+            m.classList.remove('hidden'); switchAuthTab('login');
+        }
+        function logoutUser() { sessionStorage.removeItem('nev_session'); closeMsgModal(); closeAdminControlModal(); openAuthGate(); }
+        const chatMsgs = (a, b) => messages.filter(m => (m.from === a && m.to === b) || (m.from === b && m.to === a));
+        function openMsgModal() {
+            if (appSettings.enableMessages === false && currentUser.role !== 'admin') { showToast('الرسائل معطلة حالياً بقرار الإدارة 🚫'); return; }
+            activeChatId = null; document.getElementById('msgModal').classList.remove('hidden'); renderMsgUsers(); renderThread();
+        }
+        function closeMsgModal() { document.getElementById('msgModal').classList.add('hidden'); }
+        function renderMsgUsers() {
+            document.getElementById('msgUsersList').innerHTML = usersList.filter(u => u.id !== currentUser.id && !u.banned).map(u => {
+                const last = chatMsgs(currentUser.id, u.id).slice(-1)[0];
+                return `<button onclick="openThread('${escapeHtml(u.id)}')" class="w-full flex items-center gap-2 p-2 rounded-xl text-right ${u.id === activeChatId ? 'bg-indigo-50 dark:bg-indigo-950/40' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                    <img src="${escapeHtml(u.avatar)}" class="w-8 h-8 rounded-full object-cover">
+                    <span class="min-w-0"><span class="block text-xs font-bold truncate">${escapeHtml(u.name)}</span><span class="block text-[10px] text-slate-400 truncate">${last ? escapeHtml(last.text) : 'لا رسائل بعد'}</span></span></button>`;
+            }).join('') || '<p class="text-xs text-slate-400 p-2">لا يوجد مستخدمون آخرون.</p>';
+        }
+        function openThread(id) { activeChatId = id; renderMsgUsers(); renderThread(); }
+        function renderThread() {
+            const u = usersList.find(x => x.id === activeChatId), box = document.getElementById('msgThread');
+            document.getElementById('msgForm').classList.toggle('hidden', !u);
+            document.getElementById('msgThreadHeader').textContent = u ? u.name : 'اختر محادثة';
+            if (!u) { box.innerHTML = '<p class="text-xs text-slate-400 text-center mt-10">اختر مستخدماً لبدء المحادثة.</p>'; return; }
+            box.innerHTML = chatMsgs(currentUser.id, u.id).map(m => `<div class="flex ${m.from === currentUser.id ? 'justify-start' : 'justify-end'}"><div class="max-w-[80%] px-3 py-1.5 rounded-2xl text-sm ${m.from === currentUser.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800'}">${escapeHtml(m.text)}<div class="text-[9px] opacity-60">${formatTime(m.ts)}</div></div></div>`).join('') || '<p class="text-xs text-slate-400 text-center mt-10">ابدأ المحادثة بأول رسالة 👋</p>';
+            box.scrollTop = box.scrollHeight;
+        }
+        function sendMessage(e) {
+            e.preventDefault();
+            if (appSettings.maintenanceMode && currentUser.role !== 'admin') { showToast('⚠️ المنصة في وضع الصيانة'); return; }
+            const inp = document.getElementById('msgInput'), t = inp.value.trim();
+            if (!t || !activeChatId) return;
+            messages.push({ id: 'm_' + Date.now(), from: currentUser.id, to: activeChatId, text: t.slice(0, 500), ts: new Date().toISOString() });
+            inp.value = ''; saveAllState(); renderMsgUsers(); renderThread(); playBeep('post');
+        }
+        function renderUsersManage() {
+            const box = document.getElementById('adminUsersManage'); if (!box) return;
+            box.innerHTML = usersList.map(u => { const me = u.id === currentUser.id, id = escapeHtml(u.id); return `
+                <div class="p-2.5 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs">
+                    <div class="flex items-center gap-2 mb-2"><img src="${escapeHtml(u.avatar)}" class="w-8 h-8 rounded-full object-cover"><div><span class="font-bold block">${escapeHtml(u.name)} ${u.role === 'admin' ? '👑' : ''} ${u.banned ? '🚫 محظور' : ''}</span><span class="text-[10px] text-slate-400" dir="ltr">@${escapeHtml(u.handle)}</span></div></div>
+                    ${me ? '<span class="text-[10px] text-slate-400">حسابك الحالي</span>' : `<div class="flex flex-wrap gap-1.5">
+                        <button onclick="adminToggleBan('${id}')" class="px-2.5 py-1 rounded-xl font-bold ${u.banned ? 'bg-emerald-600 text-white' : 'bg-amber-100 text-amber-800'}">${u.banned ? 'رفع الحظر' : 'حظر'}</button>
+                        <button onclick="adminToggleRole('${id}')" class="px-2.5 py-1 rounded-xl font-bold bg-indigo-100 text-indigo-800">${u.role === 'admin' ? 'إزالة الأدمن' : 'ترقية لأدمن'}</button>
+                        <button onclick="adminResetPassword('${id}')" class="px-2.5 py-1 rounded-xl font-bold bg-slate-200 text-slate-800">كلمة مرور جديدة</button>
+                        <button onclick="adminDeleteUser('${id}')" class="px-2.5 py-1 rounded-xl font-bold bg-red-600 text-white">حذف</button></div>`}
+                </div>`; }).join('');
+        }
+        const adminUser = id => currentUser.role === 'admin' && id !== currentUser.id ? usersList.find(u => u.id === id) : null;
+        function adminToggleBan(id) { const u = adminUser(id); if (!u) return; u.banned = !u.banned; saveAllState(); renderAdminPanelContent(); showToast(u.banned ? 'تم حظر الحساب 🚫' : 'تم رفع الحظر ✅'); }
+        function adminToggleRole(id) { const u = adminUser(id); if (!u) return; u.role = u.role === 'admin' ? 'user' : 'admin'; saveAllState(); renderAdminPanelContent(); showToast('تم تغيير الصلاحية'); }
+        async function adminResetPassword(id) {
+            const u = adminUser(id); if (!u) return;
+            const n = (prompt('كلمة المرور الجديدة (8 أحرف على الأقل):') || '').trim();
+            if (n.length < 8) { showToast('كلمة المرور قصيرة'); return; }
+            u.hk = u.handle; u.pw = await pwHash(u.hk, n); delete u.password; saveAllState(); showToast('تم تغيير كلمة المرور ✅');
+        }
+        function adminDeleteUser(id) {
+            if (!adminUser(id)) return;
+            openCustomConfirm('حذف المستخدم', 'سيتم حذف الحساب وكل منشوراته ورسائله نهائياً. هل أنت متأكد؟', function () {
+                usersList = usersList.filter(u => u.id !== id); posts = posts.filter(p => p.authorId !== id);
+                messages = messages.filter(m => m.from !== id && m.to !== id);
+                saveAllState(); renderAdminPanelContent(); renderApp(); showToast('تم حذف المستخدم 🗑️');
+            });
+        }
+
+        // ===== الصور: بدائل محلية + رفع من الهاتف =====
+        const svgUri = x => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(x);
+        const PH_AV = svgUri("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#6366f1'/><stop offset='1' stop-color='#a855f7'/></linearGradient></defs><rect width='100' height='100' fill='url(#g)'/><circle cx='50' cy='38' r='17' fill='#fff' opacity='.9'/><path d='M18 92c4-22 20-30 32-30s28 8 32 30z' fill='#fff' opacity='.9'/></svg>");
+        const PH_IMG = svgUri("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#4f46e5'/><stop offset='1' stop-color='#9333ea'/></linearGradient></defs><rect width='400' height='200' fill='url(#g)'/><circle cx='150' cy='80' r='16' fill='#fff' opacity='.55'/><path d='M60 170l80-60 50 40 50-50 100 70z' fill='#fff' opacity='.45'/></svg>");
+        document.addEventListener('error', function (e) {
+            const t = e.target;
+            if (!t || t.tagName !== 'IMG' || !t.src || t.src.startsWith('data:')) return;
+            t.src = t.classList.contains('rounded-full') ? PH_AV : PH_IMG;
+        }, true);
+        function makeAvatar(n) {
+            const cols = ['#6366f1', '#a855f7', '#ec4899', '#0ea5e9', '#10b981', '#f59e0b'];
+            const h = [...String(n)].reduce((a, c) => a + c.charCodeAt(0), 0);
+            const ch = escapeHtml(String(n).trim().charAt(0) || 'N');
+            return svgUri(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='${cols[h % 6]}'/><text x='50' y='67' font-size='48' text-anchor='middle' fill='#fff' font-family='sans-serif' font-weight='700'>${ch}</text></svg>`);
+        }
+        function makeCover() { return PH_IMG; }
+        function compressImage(file, max, q) {
+            return new Promise((res, rej) => {
+                if (!file || !/^image\//.test(file.type)) return rej(new Error('type'));
+                if (file.size > 15 * 1024 * 1024) return rej(new Error('size'));
+                const fr = new FileReader();
+                fr.onerror = rej;
+                fr.onload = () => {
+                    const im = new Image();
+                    im.onerror = rej;
+                    im.onload = () => {
+                        const k = Math.min(1, max / Math.max(im.width, im.height));
+                        const c = document.createElement('canvas');
+                        c.width = Math.max(1, Math.round(im.width * k)); c.height = Math.max(1, Math.round(im.height * k));
+                        const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+                        g.drawImage(im, 0, 0, c.width, c.height);
+                        res(c.toDataURL('image/jpeg', q));
+                    };
+                    im.src = fr.result;
+                };
+                fr.readAsDataURL(file);
+            });
+        }
+        async function pickImage(inp, max, q) {
+            const f = inp.files && inp.files[0]; inp.value = '';
+            if (!f) return null;
+            if (appSettings.allowImageUploads === false && currentUser.role !== 'admin') { showToast('رفع الصور معطل حالياً بقرار الإدارة 🚫'); return null; }
+            try { showToast('جارٍ تجهيز الصورة... ⏳'); return await compressImage(f, max, q); }
+            catch (e) { showToast(e.message === 'size' ? 'الصورة كبيرة جداً (الحد 15 ميجابايت)' : 'تعذر قراءة الصورة، اختر ملف صورة صالحاً'); return null; }
+        }
+        async function pickComposerImage(inp) { const d = await pickImage(inp, 1000, 0.72); if (d) selectPreset(d); }
+        async function pickProfileImage(inp, targetId, max, q) {
+            const d = await pickImage(inp, max, q);
+            if (d) { document.getElementById(targetId).value = d; showToast('تم اختيار الصورة ✅ اضغط حفظ لتأكيدها'); }
+        }
+
+        // Initialize Application on Window Load
+        window.onload = function () {
+            applyAntiZoomRules();
+            const sid = sessionStorage.getItem('nev_session');
+            const su = usersList.find(u => u.id === sid && !u.banned);
+            if (su) { currentUser = su; activeProfileUserId = su.id; } else openAuthGate();
+            migratePasswords();
+            applyAllSettingsToDOM();
+
+            if (appSettings.autoSaveDrafts) {
+                const draft = localStorage.getItem(STORAGE_KEYS.DRAFT_TEXT);
+                if (draft) {
+                    const input = document.getElementById('composerInput');
+                    if (input) input.value = draft;
+                }
+            }
+
+            renderApp();
+        };
+    </script>
+</body>
+</html>
